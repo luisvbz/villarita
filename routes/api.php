@@ -13,9 +13,9 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
+/*Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
-});
+});*/
 
 
 
@@ -27,6 +27,7 @@ Route::post('/register', 'LoginController@register');
             'uses' => 'LoginController@user',
         ]);
         Route::get('/casas', 'CensoController@getAll');
+        Route::post('/casas', 'CensoController@save');
         Route::get('/casas/{id}', 'CensoController@getCasa');
     });
 

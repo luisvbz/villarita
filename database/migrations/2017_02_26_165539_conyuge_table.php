@@ -26,7 +26,6 @@ class ConyugeTable extends Migration
             $table->string('telefono1');
             $table->string('telefono2')->nullable();
             $table->string('telefono3')->nullable();
-            $table->string('email')->unique();
             $table->timestamps();
 
             $table->foreign('propietario_id')->references('id')->on('propietarios')->onDelete('cascade')->onUpdate('cascade');

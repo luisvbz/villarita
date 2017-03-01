@@ -29,6 +29,7 @@ import Login from './components/Login.vue';
 
 Vue.http.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('id_token');
 Vue.http.options.root = 'http://localhost:8000';
+Vue.http.headers.common['X-CSRF-TOKEN'] = $("#token").attr("value");
 
 const app = new Vue({
     el: '#app',

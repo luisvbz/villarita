@@ -102,11 +102,11 @@
         </div>
       </div>
       <!-- search form -->
-      <form action="#" method="get" class="sidebar-form">
+      <form class="sidebar-form" v-on:submit.prevent="buscarCasa">
         <div class="input-group">
-          <input type="text" name="q" class="form-control" placeholder="Buscar...">
+          <input type="text" class="form-control" placeholder="Buscar..." v-model="buscar">
               <span class="input-group-btn">
-                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
+                <button type="submit"  class="btn btn-flat"><i class="fa fa-search"></i>
                 </button>
               </span>
         </div>
@@ -142,6 +142,7 @@
 <script>
   import auth from '../services/auth';
   import Ruta from './Ruta.vue';
+  import router from '../routes';
   export default {
     data() {
             return {
@@ -149,7 +150,8 @@
                 admin: false,
                 username: null,
                 password: null,
-                error: false
+                error: false,
+                buscar: ''
             }
         },
         mounted(){
@@ -180,6 +182,16 @@
             signin(event) {
                 event.preventDefault()
                 auth.signin(this, this.username, this.password)
+            },
+            buscarCasa: function(){
+
+                if(this.buscar == ''){
+                  return false
+                }
+
+                router.push({name: 'propietarios.id', params: {id: this.buscar} });
+
+                this.buscar = '';
             }
         },
         components: {

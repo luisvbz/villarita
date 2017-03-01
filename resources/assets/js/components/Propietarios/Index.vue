@@ -6,7 +6,8 @@
         <div class="col-md-12">
           <div class="box">
             <div class="box-header with-border">
-              <h3 class="box-title">Lista de propietarios</h3>
+              <h3 class="box-title">Lista de propietarios - <strong>{{ propietarios.length }}</strong> Registros</h3>
+              <router-link to="/propietarios/nuevo" class="btn btn-info pull-right">Agregar <i class="fa fa-plus"></i></router-link>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
@@ -32,7 +33,9 @@
                     <td>{{ casa.propietario.apellidos }}</td>
                     <td>{{ casa.propietario.nombres }}</td>
                     <td>{{ casa.propietario.telefono1 }}</td>
-                    <td><router-link :to="'/propietarios/'+casa.propietario.id"><i class="fa fa-eye"></i></router-link></td>
+                    <td><router-link :to="'/propietarios/'+casa.numero" 
+                                      class="btn btn-sm btn-primary"
+                                      rel="tooltip" title="Ver ficha completa"><i class="fa fa-eye"></i></router-link></td>
                     <td></td>
                   </tr>
                 </tbody>

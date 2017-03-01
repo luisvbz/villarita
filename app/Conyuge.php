@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Conyuge extends Model
 {
-    //
+    protected $table = "conyuges";
 }
