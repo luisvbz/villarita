@@ -19,6 +19,12 @@ class CensoController extends Controller
     	return $propietarios->toJson();
     }
 
+    public function pdf(){
+        $pdf = \App::make('dompdf.wrapper');
+        $pdf->loadHTML('<h1>Test</h1>');
+        return $pdf->stream();
+    }
+
     public function getCasa($id)
     {
 
