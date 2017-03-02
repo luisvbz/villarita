@@ -46,8 +46,7 @@
     <div class="pull-right hidden-xs">
       <b>Version</b> 1.0
     </div>
-    <strong>Villa Rita &copy; 2017 <a href="http://ingluisvasquez.com.ve">Luis Vasquez</a>.</strong> All rights
-    reserved.
+    <strong>Villa Rita &copy; 2017 <a href="http://ingluisvasquez.com.ve">Luis Vasquez</a>.</strong> Derechos Reservados
   </footer>
 
 </div>
@@ -87,9 +86,5 @@
     <script src="plugins/fastclick/fastclick.js"></script>
     <!-- AdminLTE App -->
     <script src="dist/js/app.min.js"></script>
-    <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-    <script src="dist/js/pages/dashboard.js"></script>
-    <!-- AdminLTE for demo purposes -->
-    <script src="dist/js/demo.js"></script>
     </body>
 </html>

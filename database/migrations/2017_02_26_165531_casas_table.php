@@ -15,7 +15,7 @@ class CasasTable extends Migration
     {
      Schema::create('casas', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('numero');
+            $table->integer('numero')->unique();
             $table->integer('calle');
             $table->integer('propietario_id')->unsigned();
             $table->timestamps();

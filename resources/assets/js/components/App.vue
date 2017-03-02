@@ -117,9 +117,8 @@
       <ul class="sidebar-menu">
         <li class="header">MENU PRINCIPAL</li>
         <li :class="$route.path == '/' ? 'active': ''"><router-link to="/"><i class="fa fa-home"></i> <span>Inicio</span></router-link></li>
-        <li v-if="rol_informatica" :class="$route.path == '/demo' ? 'active': ''"><router-link to="/demo"><i class="fa fa-user"></i> <span>Usuarios</span></router-link></li>
         <li v-if="auth.user.authenticated && auth.user.profile.rol != 5" :class="$route.path == '/propietarios' ? 'active': ''"><router-link to="/propietarios"><i class="fa fa-group"></i> <span>Censo</span></router-link></li>
-        <li v-if="rol_administrador"><a href="#"><i class="fa fa-money"></i> <span>Balance general</span></li>
+        <li :class="$route.path == '/admin' ? 'active': ''" v-if="rol_administrador || rol_informatica"><router-link to="/admin"><i class="fa fa-dashboard"></i> <span>Panel del control</span></router-link></li>
       </ul>
     </section>
     <!-- /.sidebar -->

@@ -18,7 +18,7 @@ class VehiculosTable extends Migration
             $table->integer('propietario_id')->unsigned();
             $table->string('marca');
             $table->string('modelo');
-            $table->string('año');
+            $table->string('anio');
             $table->string('placa')->unique();    
             $table->timestamps();
 

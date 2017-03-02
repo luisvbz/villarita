@@ -29,6 +29,7 @@ Route::post('/register', 'LoginController@register');
         Route::get('/casas', 'CensoController@getAll');
         Route::post('/casas', 'CensoController@save');
         Route::get('/casas/{id}', 'CensoController@getCasa');
+        Route::put('/casas/{id}', 'CensoController@updateCasa');
     });
 Route::get('/pdf', 'CensoController@pdf');
 

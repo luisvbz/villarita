@@ -11,7 +11,7 @@
                   <label for="calle" class="col-sm-2 control-label">Calle #</label>
 
                   <div class="col-sm-1">
-                    <select class="form-control" id="calle" v-model="propietario.calle" required>
+                    <select class="form-control" id="calle" v-model="casa.calle" required>
                     	<option value="1">1</option>
                     	<option value="2">2</option>
                     	<option value="3">3</option>
@@ -23,7 +23,7 @@
                   </div>
                   <label for="casa" class="col-sm-2 control-label">Casa #</label>
                   <div class="col-sm-2">
-                  	<input type="number" class="form-control" maxlength="3" v-model="propietario.casa" required>
+                  	<input type="number" class="form-control" maxlength="3" v-model="casa.numero" required>
                   </div>
                   <div class="col-sm-4">
                     <div class="checkbox">
@@ -153,13 +153,13 @@
 	                <div class="form-group">
 	                	<label class="col-sm-2 control-label">Telefonos</label>
 	                	<div class="col-sm-2">
-	                    	<input class="form-control" id="telc1" placeholder="0414123467" type="text" v-model="conyuge.tel1" required>
+	                    	<input class="form-control" id="telc1" placeholder="0414123467" type="text" v-model="conyuge.telefono1" required>
 	                  </div>
 	                  <div class="col-sm-2">
-	                    	<input class="form-control" id="telc3" placeholder="0414123467" type="text" v-model="conyuge.tel2">
+	                    	<input class="form-control" id="telc3" placeholder="0414123467" type="text" v-model="conyuge.telefono2">
 	                  </div>
 	                  <div class="col-sm-2">
-	                    	<input class="form-control" id="telc3" placeholder="0414123467" type="text" v-model="conyuge.tel3">
+	                    	<input class="form-control" id="telc3" placeholder="0414123467" type="text" v-model="conyuge.telefono3">
 	                  </div>
 	                </div>
                 </div>
@@ -196,7 +196,7 @@
 	                    	<input class="form-control" v-model="hijo.apellidos" placeholder="Apelldos" type="text" required>
 	                  </div>
 	                  <div class="col-sm-2">
-	                    	<input class="form-control" v-model="hijo.nombres"  placeholder="Nombres" type="text" required>
+	                    	<input class="form-control" v-model="hijo.nombre"  placeholder="Nombres" type="text" required>
 	                  </div>
 	                   <div class="col-sm-2">
 	                    	<input class="form-control" v-model="hijo.fecnac" placeholder="01/01/2001" type="text" required>
@@ -208,7 +208,7 @@
 	                    	</select>
 	                  </div>
 	                   <div class="col-sm-1">
-	                    	<select class="form-control" v-model="hijo.grado" required>
+	                    	<select class="form-control" v-model="hijo.grado_estudio" required>
 	                    		<option value="F">Pre-Escolar</option>
 	                    		<option value="M">Basica</option>
 	                    		<option value="M">Bachillerato</option>
@@ -263,7 +263,7 @@
               </div>	
               <div class="box-footer">
                 <router-link to="/propietarios" class="btn btn-default"><i class="fa fa-arrow-left"> Regresar</router-link>
-                <button type="submit" class="btn btn-primary pull-right">Guardar <i class="fa fa-save"></i></button>
+                <button type="submit" class="btn btn-primary pull-right">Actualizar <i class="fa fa-refresh"></i></button>
               </div>
             </form>
             <div class="overlay" v-if="saving">
@@ -285,18 +285,77 @@ export default {
 			hasHijos: false,
 			hasVehiculos: false,
 			saving: false,
-			propietario: {inquilino: false, calle: '', casa: '', cedula: '', apellidos: '', nombres: '',
+			casa: {},
+			propietario: {id: '', inquilino: false, cedula: '', apellidos: '', nombres: '',
 						  fecnac: '', sexo: '', profesion: '', empresa: '', tel1: '', tel2: '', tel3: '', email: ''},
-			conyuge: {cedula: '', apellidos: '', nombres: '',
-					  fecnac: '', sexo: '', profesion: '', empresa: '', tel1: '', tel2: '', tel3: ''},
-			hijos: [{cedula: '', apellidos: '', nombres: '', fecnac: '', sexo: '', grado: ''}],
-			vehiculos: [{marca: '', modelo: '', anio: '', placa: ''}]
+			conyuge: {},
+			hijos: [],
+			vehiculos: []
 		}
-	}, 
+	},
+	 mounted(){
+      
+      if(!auth.user.authenticated)
+      {
+        return router.push({path: '/'})
+      }
+
+      this.getCasa();
+
+    },
 	methods: {
+		getCasa: function(){
+        this.hijos = [];
+        this.vehiculos = [];
+        this.$http.get('/api/casas/'+this.$route.params.id).then(response => {
+            var data = response.body[0];
+            if(response.body.length == 0){
+              this.existe = false;
+            }else{
+              this.casa = data.casa;
+
+              if(data.conyuge != null){
+              	this.hasConyuge = true;
+              	this.conyuge = data.conyuge;
+              }
+
+              if(data.hijos.length > 0){
+              	this.hasHijos = true;
+              	for (var i = 0; i < data.hijos.length; i++) {
+                this.hijos.push(data.hijos[i]);
+               }
+              }
+
+              if(data.vehiculos.length > 0){
+              	this.hasVehiculos = true;
+              	for (var i = 0; i < data.vehiculos.length; i++) {
+                this.vehiculos.push(data.vehiculos[i]);
+               }
+              }
+             
+              //data propietario
+              this.propietario.id = data.id;
+              this.propietario.inquilino = data.inquilino;
+              this.propietario.cedula = data.cedula;
+              this.propietario.apellidos = data.apellidos;
+              this.propietario.nombres = data.nombres;
+              this.propietario.fecnac = data.fecnac;
+              this.propietario.sexo = data.sexo;
+              this.propietario.profesion = data.profesion;
+              this.propietario.empresa = data.empresa;
+              this.propietario.tel1 = data.telefono1;
+              this.propietario.tel2 = data.telefono2;
+              this.propietario.tel3 = data.telefono2;
+              this.propietario.email = data.email;
+            }
+
+	        }, response => {
+	            //console.log(error);
+	        })
+    	},
 		addHijo: function(){
 
-			this.hijos.push({cedula: '', apellidos: '', nombres: '', fechcan: '', sexo: '', grado: ''});
+			this.hijos.push({cedula: '', apellidos: '', nombres: '', fecnac: '', sexo: '', grado: ''});
 		},
 		removeHijo: function(){
 			var index = (this.hijos.length);
@@ -316,19 +375,21 @@ export default {
 		},
 		savePropietario: function(){
 			this.saving = true;
-			this.$http.post('/api/casas', {hasConyuge: this.hasConyuge, 
+			this.$http.put('/api/casas/'+this.$route.params.id, {hasConyuge: this.hasConyuge, 
 									   hasHijos: this.hasHijos,
 									   hasVehiculos: this.hasVehiculos,
 									   propietario: this.propietario, 
 									   conyuge: this.conyuge, 
 									   hijos: this.hijos,
-									   vehiculos: this.vehiculos}).then(response => {
+									   vehiculos: this.vehiculos,
+										casa: this.casa}).then(response => {
 									   		console.log(response);
 									   		if(!response.body.save){
 									   			alert(response.body.msj);
 									   		}else{
-                          this.saving = false;
-                           router.push({path: '/propietarios'});  
+									   			alert(response.body.msj);
+                          						this.saving = false;
+                          						 router.push({path: '/propietarios'});  
                         }
 									   		
 									   }, response => {

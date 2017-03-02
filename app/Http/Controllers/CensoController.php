@@ -46,7 +46,7 @@ class CensoController extends Controller
     	$hijos = $request->input('hijos');
     	$vehiculos = $request->input('vehiculos');
 
-    	//return $hijos;
+    	//return $vehiculos;
     	//verificar si la casa esta registrada
 
     	$verificarCasa = Casa::where('numero', $propietario['casa'])->get();
@@ -172,7 +172,7 @@ class CensoController extends Controller
     			$vehiculo->propietario_id = $p->id;
     			$vehiculo->marca = $v['marca'];
     			$vehiculo->modelo = $v['modelo'];
-    			$vehiculo->año = $v['anio'];
+    			$vehiculo->anio = $v['anio'];
     			$vehiculo->placa = $v['placa'];
     			$vehiculo->save();
     		}
@@ -180,5 +180,164 @@ class CensoController extends Controller
 
     	return response()->json(['save' => true, 'msj' => 'El registro fue hecho exitosamente']);
 
+    }
+
+    public function updateCasa($id, Request $request){
+
+        $casa = $request->input('casa');
+        $propietario = $request->input('propietario');
+        $conyuge = $request->input('conyuge');
+        $hijos = $request->input('hijos');
+        $vehiculos = $request->input('vehiculos');
+
+
+        //return $casa['id'];
+        //Actualizar la casa 
+        $c = Casa::find($casa['id']);
+        $c->numero = $casa['numero'];
+        $c->calle = $casa['calle'];
+        $csave = $c->save();
+
+        if(!$csave){
+
+            return response()->json(['save' => false, 'msj' => 'Ocurrio un error con el numero de la casa!']);
+        }
+
+        //Actualizar informacion del propietario
+
+        $p = Propietario::find($propietario['id']);
+        $p->cedula = $propietario['cedula'];
+        $p->apellidos = $propietario['apellidos'];
+        $p->nombres = $propietario['nombres'];
+        $p->fecnac = date('Y-m-d', strtotime($propietario['fecnac']));
+        $p->sexo = $propietario['sexo'];
+        $p->profesion = $propietario['profesion'];
+        $p->empresa = $propietario['empresa'];
+        $p->telefono1 = $propietario['tel1'];
+        $p->telefono2 = $propietario['tel2'];
+        $p->telefono3 = $propietario['tel3'];
+        $p->email = $propietario['email'];
+        $p->inquilino = $propietario['inquilino'];
+        $psave = $p->save();
+
+        if($request->input('hasConyuge')){
+
+            if(count($conyuge) == 14){
+                $cyg = Conyuge::find($conyuge['id']);
+                $cyg->cedula = $conyuge['cedula'];
+                $cyg->apellidos = $conyuge['apellidos'];
+                $cyg->nombres = $conyuge['nombres'];
+                $cyg->fecnac = date('Y-m-d', strtotime($conyuge['fecnac']));
+                $cyg->sexo = $conyuge['sexo'];
+                $cyg->profesion = $conyuge['profesion'];
+                $cyg->empresa = $conyuge['empresa'];
+                $cyg->telefono1 = $conyuge['telefono1'];
+                $cyg->telefono2 = $conyuge['telefono2'];
+                $cyg->telefono3 = $conyuge['telefono3'];
+                $cygsave = $cyg->save();
+
+                if(!$cygsave){
+
+                     return response()->json(['save' => false, 'msj' => 'Ocurrio un error al guardar el conyuge!']);
+                }
+
+            }else{
+                $cyg = new Conyuge;
+                $cyg->propietario_id = $p->id;
+                $cyg->cedula = $conyuge['cedula'];
+                $cyg->apellidos = $conyuge['apellidos'];
+                $cyg->nombres = $conyuge['nombres'];
+                $cyg->fecnac = date('Y-m-d', strtotime($conyuge['fecnac']));
+                $cyg->sexo = $conyuge['sexo'];
+                $cyg->profesion = $conyuge['profesion'];
+                $cyg->empresa = $conyuge['empresa'];
+                if(count($conyuge) == 8){
+                    $cyg->telefono1 = $conyuge['telefono1'];
+                }elseif(count($conyuge) == 9){
+                    $cyg->telefono1 = $conyuge['telefono1'];
+                    $cyg->telefono2 = $conyuge['telefono2'];
+                }elseif(count($conyuge) == 10){
+                    $cyg->telefono1 = $conyuge['telefono1'];
+                    $cyg->telefono2 = $conyuge['telefono2'];
+                    $cyg->telefono3 = $conyuge['telefono3'];
+                }
+                
+                $cygsave = $cyg->save();
+            }
+        }else{
+
+            if(count($conyuge) == 0){
+
+            }else{
+                $cyg = Conyuge::find($conyuge['id']);
+                $cyg->delete();
+            }
+        
+        }
+
+        //actualizar informacion de los hijos
+
+        if($request->input('hasHijos')){
+
+            foreach ($hijos as $h) {
+                
+                $verificarHijo = Hijo::where('cedula', $h['cedula'])->get();
+
+                if(count($verificarHijo) > 0){
+                    $hijo = Hijo::find($h['id']);
+                    $hijo->cedula = $h['cedula'];
+                    $hijo->apellidos = $h['apellidos'];
+                    $hijo->nombre = $h['nombre'];
+                    $hijo->fecnac = date('Y-m-d', strtotime($h['fecnac']));
+                    $hijo->sexo = $h['sexo'];
+                    $hijo->grado_estudio = $h['grado_estudio'];
+                    $hijo->save();
+                }else{
+
+                    $hijo = new Hijo;
+                    $hijo->propietario_id = $p->id;
+                    $hijo->cedula = $h['cedula'];
+                    $hijo->apellidos = $h['apellidos'];
+                    $hijo->nombre = $h['nombre'];
+                    $hijo->fecnac = date('Y-m-d', strtotime($h['fecnac']));
+                    $hijo->sexo = $h['sexo'];
+                    $hijo->grado_estudio = $h['grado_estudio'];
+                    $hijo->save();
+                }
+
+            }
+        }
+
+        //actualizar o agregar vehiculos
+
+        if($request->input('hasVehiculos')){
+
+
+        foreach ($vehiculos as $v) {
+            
+            $verificarVehiculo = Vehiculo::where('placa', $v['placa'])->get();
+
+            if(count($verificarVehiculo) > 0){
+
+                    $vehiculo = Vehiculo::find($v['id']);
+                    $vehiculo->marca = $v['marca'];
+                    $vehiculo->modelo = $v['modelo'];
+                    $vehiculo->anio = $v['anio'];
+                    $vehiculo->placa = $v['placa'];
+                    $vehiculo->save();
+
+                }else{
+                    $vehiculo = new Vehiculo;
+                    $vehiculo->propietario_id = $p->id;
+                    $vehiculo->marca = $v['marca'];
+                    $vehiculo->modelo = $v['modelo'];
+                    $vehiculo->anio = $v['anio'];
+                    $vehiculo->placa = $v['placa'];
+                    $vehiculo->save();
+                }
+            }
+        }
+
+        return response()->json(['save' => true, 'msj' => 'El registro fue actualizado exitosamente']);
     }
 }

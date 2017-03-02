@@ -35,7 +35,11 @@
                     <td>{{ casa.propietario.telefono1 }}</td>
                     <td><router-link :to="'/propietarios/'+casa.numero" 
                                       class="btn btn-sm btn-primary"
-                                      rel="tooltip" title="Ver ficha completa"><i class="fa fa-eye"></i></router-link></td>
+                                      rel="tooltip" title="Ver ficha completa"><i class="fa fa-eye"></i></router-link>
+                        <router-link :to="{name: 'propietarios.editar', params: {'id': casa.numero }}"
+                                      class="btn btn-sm btn-success">
+                                      <i class="fa fa-edit"></i></router-link>
+                      </td>
                     <td></td>
                   </tr>
                 </tbody>
@@ -58,7 +62,7 @@
     data () {
       return {
         propietarios: [],
-        laoding: false,
+        loading: false,
         auth:auth
       }
     }, 

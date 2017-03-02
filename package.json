@@ -15,7 +15,9 @@
     "vue": "^2.0.1",
     "vue-router": "^2.0.0",
     "vue-resource": "^1.2.0",
-    "vue-bootstrap-pagination": "2.10.2 "
-
+    "vue-bootstrap-pagination": "2.10.2"
+  },
+  "dependencies": {
+    "vuejs-datepicker": "^0.6.2"
   }
 }

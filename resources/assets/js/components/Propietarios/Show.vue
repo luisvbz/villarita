@@ -12,8 +12,12 @@
         <div class="col-xs-12">
           <h2 class="page-header">
             <i class="fa fa-home"></i> Casa # {{ casa.numero }}
-            <small class="pull-right"></small>
           </h2>
+            <div class="pull-right">
+              <router-link :to="{name: 'propietarios.editar', params: {id: casa.numero}}" class="btn btn-xs btn-success">Editar <i class="fa fa-edit"></i></router-link>&nbsp;
+            <button class="btn btn-xs btn-danger">Imprimir <i class="fa fa-pdf"></i></button>
+            </div>
+          
         </div>
         <!-- /.col -->
       </div>
@@ -43,13 +47,16 @@
       </div>
       <!-- /.row -->
       <br>
-      <div class="nav-tabs-custom">
+      <div class="row">
+        <div class="col-xs-12 table-responsive">
+            <div class="nav-tabs-custom">
             <ul class="nav nav-tabs">
-              <li class="active" v-if="hijos.length > 0"><a aria-expanded="false" href="#hijos" data-toggle="tab">Hijos</a></li>
+              <li class="active" v-if="hijos.length > 0"><a aria-expanded="true" href="#hijos" data-toggle="tab">Hijos</a></li>
+              <li :class="hijos.length == 0 ? 'active' : ''" v-if="vehiculos.length > 0"><a :aria-expanded="hijos.length == 0 ? 'true' : 'false'" href="#vehiculos" data-toggle="tab">Vehiculos</a></li>
             </ul>
             <div class="tab-content">
               <div class="tab-pane active" id="hijos" v-if="hijos.length > 0">
-                <table class="table table-striped">
+                <table class="table table-striped table-responsive">
                     <thead>
                       <th>#</th>
                       <th>Cedula</th>
@@ -72,9 +79,32 @@
                     </tbody>
                 </table>
               </div>
+              <div :class="hijos.length == 0 ? 'tab-pane active' : 'tab-pane'" id="vehiculos" v-if="vehiculos.length > 0">
+               <table class="table table-striped table-responsive">
+                    <thead>
+                      <th>#</th>
+                      <th>Marca</th>
+                      <th>Modelo</th>
+                      <th>Año</th>
+                      <th>Placa</th>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(v, index) in vehiculos">
+                        <td>{{ index + 1 }}</td>
+                        <td class="cap">{{ v.marca }}</td>
+                        <td class="cap">{{ v.modelo }}</td>
+                        <td>{{ v.anio }}</td>
+                        <td>{{ v.placa }}</td>
+                      </tr>
+                    </tbody>
+                </table>
+              </div>
             </div>
             <!-- /.tab-content -->
-          </div>
+      </div>
+        </div>
+      </div>
+      
 
       <!-- this row will not appear when printing -->
       <div class="row no-print">
@@ -127,6 +157,7 @@
     methods: {
       getCasa: function(){
         this.hijos = [];
+        this.vehiculos = [];
         this.$http.get('/api/casas/'+this.$route.params.id).then(response => {
             var data = response.body[0];
             if(response.body.length == 0){
@@ -134,14 +165,15 @@
             }else{
               this.casa = data.casa;
               this.conyuge = data.conyuge;
+
               for (var i = 0; i < data.hijos.length; i++) {
                 this.hijos.push(data.hijos[i]);
               };
-              
-              this.vehiculos.push(data.vehiculos);
 
-               console.log(data);
-
+              for (var i = 0; i < data.vehiculos.length; i++) {
+                this.vehiculos.push(data.vehiculos[i]);
+              };
+            
               //data propietario
               this.propietario.cedula = data.cedula;
               this.propietario.apellidos = data.apellidos;
