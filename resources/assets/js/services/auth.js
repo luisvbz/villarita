@@ -6,7 +6,7 @@ export default {
         profile: null
     },
     check() {
-        if (localStorage.getItem('id_token') !== null) {
+        if (localStorage.getItem('jwt-token') !== null) {
             Vue.http.get(
                 'api/user'
             ).then(response => {
@@ -39,8 +39,8 @@ export default {
             }
         ).then(response => {
             context.error = false
-            localStorage.setItem('id_token', response.data.meta.token)
-            Vue.http.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('id_token')
+            localStorage.setItem('jwt-token', response.data.meta.token)
+            Vue.http.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('jwt-token')
 
             this.user.authenticated = true
             this.user.profile = response.data.data
@@ -54,7 +54,7 @@ export default {
         })
     },
     signout() {
-        localStorage.removeItem('id_token')
+        localStorage.removeItem('jwt-token')
         this.user.authenticated = false
         this.user.profile = null
 

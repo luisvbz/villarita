@@ -11,7 +11,9 @@
 |
 */
 
-Route::any('{all}', function () {
+Route::any('{all?}', function () {
     return view('app');
 })
 ->where(['all' => '.*']);
+
+Route::get('/pdf', 'CensoController@pdf');

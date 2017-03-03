@@ -8,6 +8,8 @@ use App\Conyuge;
 use App\Casa;
 use App\Hijo;
 use App\Vehiculo;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class CensoController extends Controller
 {
@@ -20,9 +22,10 @@ class CensoController extends Controller
     }
 
     public function pdf(){
+
         $pdf = \App::make('dompdf.wrapper');
-        $pdf->loadHTML('<h1>Test</h1>');
-        return $pdf->stream();
+        $pdf->loadHTML('<h1>Prueba 1</h1>');
+        return $pdf->download();
     }
 
     public function getCasa($id)

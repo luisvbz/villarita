@@ -18,6 +18,7 @@
     "vue-bootstrap-pagination": "2.10.2"
   },
   "dependencies": {
-    "vuejs-datepicker": "^0.6.2"
+    "vuejs-datepicker": "^0.6.2",
+    "bootstrap": "^3.3.7"
   }
 }

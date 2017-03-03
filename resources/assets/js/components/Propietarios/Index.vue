@@ -35,7 +35,7 @@
                     <td>{{ casa.propietario.telefono1 }}</td>
                     <td><router-link :to="'/propietarios/'+casa.numero" 
                                       class="btn btn-sm btn-primary"
-                                      rel="tooltip" title="Ver ficha completa"><i class="fa fa-eye"></i></router-link>
+                                      rel="tooltip" title="Ver ficha completa"><i class="fa fa-search-plus"></i></router-link>
                         <router-link :to="{name: 'propietarios.editar', params: {'id': casa.numero }}"
                                       class="btn btn-sm btn-success">
                                       <i class="fa fa-edit"></i></router-link>

@@ -17,6 +17,7 @@ class CreateUsersTable extends Migration
             $table->increments('id');
             $table->integer('cedula');
             $table->string('name');
+            $table->string('email')->unique();
             $table->string('username')->unique();
             $table->string('password');
             $table->integer('role_id')->unsigned();
