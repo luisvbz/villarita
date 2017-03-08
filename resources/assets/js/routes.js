@@ -19,8 +19,11 @@ const router = new VueRouter({
                 {path: 'aniofiscal', name: 'afiscal', component: require('./components/Mantenimiento/Fiscal/Index.vue')},
                 {path: 'periodos', name: 'periodos', component: require('./components/Mantenimiento/Periodos/Index.vue')},
                 {path: 'cuentas', name: 'cuentas', component: require('./components/Mantenimiento/Bancos/Index.vue')},
+                {path: 'tipoingresos', name: 'tipo.ingresos', component: require('./components/Mantenimiento/Ingresos/Index.vue')},
+                {path: 'tipoegresos', name: 'tipo.egresos', component: require('./components/Mantenimiento/Egresos/Index.vue')},
                 {path: 'usuarios', name: 'users', component: require('./components/Mantenimiento/Usuarios/Index.vue')}
             ]},
+        { path: '/administracion', name: 'admin', component: require('./components/Administracion/Index.vue')},
         { path: '*', redirect: '/'}
     ]
 })

@@ -80,13 +80,13 @@
                 <div class="form-group">
                 	<label class="col-sm-2 control-label">Telefonos</label>
                 	<div class="col-sm-2">
-                    	<input class="form-control" id="tel1" placeholder="0414123467" type="text" v-model="propietario.tel1" required>
+                    	<input class="form-control" id="tel1" placeholder="" type="text" v-model="propietario.tel1" required>
                   </div>
                   <div class="col-sm-2">
-                    	<input class="form-control" id="tel2" placeholder="0414123467" type="text" v-model="propietario.tel2">
+                    	<input class="form-control" id="tel2" placeholder="" type="text" v-model="propietario.tel2">
                   </div>
                   <div class="col-sm-2">
-                    	<input class="form-control" id="tel2" placeholder="0414123467" type="text" v-model="propietario.tel3">
+                    	<input class="form-control" id="tel3" placeholder="" type="text" v-model="propietario.tel3">
                   </div>
                 </div>
                 <div class="form-group">
@@ -345,7 +345,7 @@ export default {
               this.propietario.empresa = data.empresa;
               this.propietario.tel1 = data.telefono1;
               this.propietario.tel2 = data.telefono2;
-              this.propietario.tel3 = data.telefono2;
+              this.propietario.tel3 = data.telefono3;
               this.propietario.email = data.email;
             }
 

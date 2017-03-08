@@ -17,6 +17,7 @@
 	            			<th>Titukar</td>
 	            			<th>Tipo</th>
 	            			<th>Numero</th>
+	            			<th></th>
             			</tr>
             		</thead>
             		<tbody>
@@ -28,6 +29,8 @@
             				<td v-if="cuenta.tipo == 1">Ahorro</td>
             				<td v-else>Corriente</td>
             				<td>0{{ cuenta.numero }}</td>
+            				<td><button rel="tooltip" title="Editar cuenta" class="btn btn-sm btn-success"><i class="fa fa-edit"></i></button>
+            				<button rel="tooltip" v-on:click="deleteCuenta(cuenta, index)" title="Eliminar cuenta" class="btn btn-sm btn-danger"><i class="fa fa-trash-o"></i></button></td>
             			</tr>
             		</tbody>
             	</table>
@@ -143,6 +146,19 @@
 				}, response => {
 
 				})
+			},
+			deleteCuenta: function(cuenta, index){
+				var q = confirm('Deseas eliminar la cuenta 0'+cuenta.numero +'?');
+
+				if(q == true){
+
+					this.$http.delete('/api/cuentas/'+cuenta.id).then(response => {
+						var data = response.body;
+
+						alert(data.msj);
+						this.cuentas.splice(index, 1);
+					});
+				}
 			}
 		}
 	}

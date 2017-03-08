@@ -7,6 +7,8 @@ use App\AnioFiscal;
 use App\Periodo;
 use App\Cuenta;
 use App\Banco;
+use App\TipoIngreso;
+use App\TipoEgreso;
 
 class MantenimientoController extends Controller
 {
@@ -129,10 +131,100 @@ class MantenimientoController extends Controller
         return response()->json(['save' => true, 'msj' => 'La cuenta se regustra exitosamente!', 'cuenta' => $cbanco[0]]);
     }
 
+    public function deleteCuenta($id)
+    {  
+        $cuenta = Cuenta::find($id);
+        $cdelete = $cuenta->delete();
+
+        if(!$cdelete){
+
+            return response()->json(['delete' => false, 'msj' => 'La cuenta no se puede eliminar']);            
+        }
+
+        return response()->json(['delete' => true, 'msj' => 'La cuenta se elimino correctamente']);
+    }
+
     public function getBancos()
     {
         $bancos = Banco::orderBy('descripcion',  'ASC')->get();
 
         return $bancos->toJson();
+    }
+
+    //Tipos de Ingresos
+
+    public function getTipoIngresos()
+    {
+        $tiposIngresos = TipoIngreso::all();
+
+        return $tiposIngresos->toJson();
+    }
+
+    public function updateIngresos($id, Request $request)
+    {
+        $tipo = TipoIngreso::find($id);
+        $tipo->descripcion = $request->input('descripcion');
+        $tsave = $tipo->save();
+
+        if(!$tsave){
+
+             return response()->json(['update' => false, 'msj' => 'No se pudo actualizar']);   
+        }
+
+        return response()->json(['update' => true, 'msj' => 'Se actualizo correctamente']);  
+    }
+
+     public function saveIngresos(Request $request)
+    {
+        $tipo = new TipoIngreso;
+        $tipo->descripcion = $request->input('descripcion');
+        $tsave = $tipo->save();
+
+         if(!$tsave){
+
+             return response()->json(['save' => false, 'msj' => 'No se guardo']);   
+        }
+
+        return response()->json(['save' => true, 'msj' => 'Se guardo correctamente', 'tipo' => $tipo]);  
+
+        
+    }
+
+    //Tipos de egresos
+    public function getTipoEgresos()
+    {
+        $tiposEgresos = TipoEgreso::all();
+
+        return $tiposEgresos->toJson();
+    }
+
+    public function updateEgresos($id, Request $request)
+    {
+        $tipo = TipoEgreso::find($id);
+        $tipo->descripcion = $request->input('descripcion');
+        $tsave = $tipo->save();
+
+        if(!$tsave){
+
+             return response()->json(['update' => false, 'msj' => 'No se pudo actualizar']);   
+        }
+
+        return response()->json(['update' => true, 'msj' => 'Se actualizo correctamente']);  
+    }
+
+     public function saveEgresos(Request $request)
+    {
+        $tipo = new TipoEgreso;
+        $tipo->descripcion = $request->input('descripcion');
+        $tsave = $tipo->save();
+
+         if(!$tsave){
+
+             return response()->json(['save' => false, 'msj' => 'No se guardo']);   
+        }
+
+        return response()->json(['save' => true, 'msj' => 'Se guardo correctamente', 'tipo' => $tipo]);  
+
+        
     }
 }

@@ -119,6 +119,7 @@
         <li :class="$route.path == '/' ? 'active': ''"><router-link to="/"><i class="fa fa-home"></i> <span>Inicio</span></router-link></li>
         <li v-if="auth.user.authenticated && auth.user.profile.rol != 5" :class="$route.path == '/propietarios' ? 'active': ''"><router-link to="/propietarios"><i class="fa fa-group"></i> <span>Censo</span></router-link></li>
         <li :class="$route.path == '/mantenimiento' ? 'active': ''" v-if="rol_administrador || rol_informatica"><router-link to="/mantenimiento"><i class="fa fa-dashboard"></i> <span>Mantenimiento</span></router-link></li>
+        <li :class="$route.path == '/administracion' ? 'active': ''" v-if="rol_administrador || rol_informatica"><router-link to="/administracion"><i class="fa fa-tasks"></i> <span>Administracion</span></router-link></li>
       </ul>
     </section>
     <!-- /.sidebar -->

@@ -20,7 +20,9 @@ class CuentasBancos extends Migration
             $table->string('titular');
             $table->string('email_titular');
             $table->string('tipo_cuenta',1);
-            $table->bigint('numero');
+            $table->float('capital_inicial');
+            $table->float('disponilble');
+            $table->bigInteger('numero');
             $table->timestamps();
         });
     }

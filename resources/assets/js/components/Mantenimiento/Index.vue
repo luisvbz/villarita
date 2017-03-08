@@ -16,12 +16,12 @@
               <router-link to="/mantenimiento/cuentas" class="btn btn-app">
                 <i class="fa fa-money"></i> Cuentas
               </router-link>
-              <a class="btn btn-app">
+              <router-link to="/mantenimiento/tipoingresos" class="btn btn-app">
                 <i class="fa fa-dollar"><i class="fa fa-long-arrow-down"></i></i>Tipos de Ingresos
-              </a>
-              <a class="btn btn-app">
+              </router-link>
+              <router-link to="/mantenimiento/tipoegresos"  class="btn btn-app">
                 <i class="fa fa-dollar"><i class="fa fa-long-arrow-up"></i></i> Tipos de Egresos
-              </a>
+               </router-link>
               <router-link to="/mantenimiento/usuarios" class="btn btn-app">
                 <span class="badge bg-purple">2</span>
                 <i class="fa fa-users"></i> Users

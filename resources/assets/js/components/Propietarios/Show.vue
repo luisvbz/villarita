@@ -24,7 +24,7 @@
       <div class="row invoice-info">
         <div class="col-sm-4 invoice-col">  
             <strong>
-            <span v-if="propietario.inquilino =! 0">Propietario</span>
+            <span v-if="!propietario.inquilino">Propietario</span>
             <span v-else>Inquilino</span></strong>
             <br>
             <strong>Cedula: </strong>{{ propietario.cedula }}<br>
@@ -118,6 +118,10 @@
         </div>-->
       </div>
     </section>
+    <div class="overlay" v-if="loading">
+              <i class="fa fa-refresh fa-spin"></i>
+           </div>
+
 		</div>
 	</div>
 </template>
@@ -134,7 +138,8 @@
         conyuge: {},
         hijos: [],
         vehiculos: [],
-        auth:auth
+        auth:auth,
+        loading: false,
       }
     }, 
     mounted(){
@@ -156,12 +161,14 @@
     },
     methods: {
       getCasa: function(){
+        this.loading = true;
         this.hijos = [];
         this.vehiculos = [];
         this.$http.get('/api/casas/'+this.$route.params.id).then(response => {
             var data = response.body[0];
             if(response.body.length == 0){
               this.existe = false;
+               this.loading = false;
             }else{
               this.casa = data.casa;
               this.conyuge = data.conyuge;
@@ -181,6 +188,7 @@
               this.propietario.fecnac = data.fecnac;
               this.propietario.inquilino = data.inquilino;
               this.existe = true;
+              this.loading = false;
             }
 
         }, response => {

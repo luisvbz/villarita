@@ -86,7 +86,7 @@
                     	<input class="form-control" id="tel2" placeholder="0414123467" type="text" v-model="propietario.tel2">
                   </div>
                   <div class="col-sm-2">
-                    	<input class="form-control" id="tel2" placeholder="0414123467" type="text" v-model="propietario.tel3">
+                    	<input class="form-control" id="tel3" placeholder="0414123467" type="text" v-model="propietario.tel3">
                   </div>
                 </div>
                 <div class="form-group">

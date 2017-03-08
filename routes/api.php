@@ -46,7 +46,22 @@ Route::post('/register', 'LoginController@register');
         /* Cuentas */
         Route::get('/cuentas/', 'MantenimientoController@getCuentas');
         Route::post('/cuentas/', 'MantenimientoController@saveCuenta');
+        Route::delete('/cuentas/{id}', 'MantenimientoController@deleteCuenta');
         Route::get('/bancos/', 'MantenimientoController@getBancos');
+
+
+        //TipoIngresos
+
+         Route::get('/tipoingresos/', 'MantenimientoController@getTipoIngresos'); 
+         Route::post('/tipoingresos/', 'MantenimientoController@saveIngresos'); 
+         Route::put('/tipoingresos/{id}', 'MantenimientoController@updateIngresos');
+
+
+        //TipoIngresos
+
+         Route::get('/tipoegresos/', 'MantenimientoController@getTipoegresos'); 
+         Route::post('/tipoegresos/', 'MantenimientoController@saveEgresos'); 
+         Route::put('/tipoegresos/{id}', 'MantenimientoController@updateEgresos'); 
 
         Route::post('/pdf', 'CensoController@pdf');
 
