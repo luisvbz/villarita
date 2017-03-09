@@ -23,7 +23,11 @@ const router = new VueRouter({
                 {path: 'tipoegresos', name: 'tipo.egresos', component: require('./components/Mantenimiento/Egresos/Index.vue')},
                 {path: 'usuarios', name: 'users', component: require('./components/Mantenimiento/Usuarios/Index.vue')}
             ]},
-        { path: '/administracion', name: 'admin', component: require('./components/Administracion/Index.vue')},
+        { path: '/administracion', name: 'admin', component: require('./components/Administracion/Index.vue'),
+            children: [
+                {path: 'ingresos', name: 'admin.ingresos', component: require('./components/Administracion/Ingresos/Index.vue')},
+                //{path: 'ingresos', name: 'admin.ingresos', component: require('./components/Administracion/Ingresos/Index.vue')}
+            ]},
         { path: '*', redirect: '/'}
     ]
 })

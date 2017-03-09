@@ -16,10 +16,11 @@ class Ingresos extends Migration
          Schema::create('ingresos', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('casa_id')->unsigned();
-            $table->integer('codperi');
+            $table->string('codperi');
             $table->integer('anio');
             $table->float('deuda');
             $table->float('pago');
+            $table->integer('tipo_ingreso_id')->unsigned();
             $table->integer('forma_pago_id')->nullable()->unsigned();
             $table->integer('cuenta_id')->nullable()->unsigned();
             $table->string('referencia')->nullable();
@@ -31,6 +32,7 @@ class Ingresos extends Migration
 
              $table->foreign('casa_id')->references('id')->on('casas')->onUpdate('cascade');
              $table->foreign('cuenta_id')->references('id')->on('cuentas_bancos')->onUpdate('cascade');
+             $table->foreign('tipo_ingreso_id')->references('id')->on('tipos_ingresos')->onUpdate('cascade');
              $table->foreign('forma_pago_id')->references('id')->on('forma_pagos')->onUpdate('cascade');
              $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
         });

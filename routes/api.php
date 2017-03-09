@@ -63,8 +63,19 @@ Route::post('/register', 'LoginController@register');
          Route::post('/tipoegresos/', 'MantenimientoController@saveEgresos'); 
          Route::put('/tipoegresos/{id}', 'MantenimientoController@updateEgresos'); 
 
+
+
+         //Ingresos
+         Route::group(['prefix' => 'ingresos'], function () {
+
+                Route::get('/', 'IngresosController@getIngresos');
+                Route::post('/generarCobro', 'IngresosController@generarCobro');
+         });
+         //Fin rutas ingresos
+
         Route::post('/pdf', 'CensoController@pdf');
 
     });
+
 
 

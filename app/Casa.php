@@ -10,4 +10,9 @@ class Casa extends Model
     {
     	return $this->belongsTo('App\Propietario');
     }
+
+    public function ingreso()
+    {
+    	return $this->hasMany('App\Ingreso');	
+    }
 }
