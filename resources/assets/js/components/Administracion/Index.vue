@@ -8,10 +8,13 @@
             </div>
             <div class="box-body">
               <router-link to="/administracion/ingresos" class="btn btn-app">
-                <i class="fa fa-dollar"><i class="fa fa-long-arrow-down"></i></i> Ingresos
+                <i class="fa fa-dollar"><i class="fa fa-long-arrow-down"></i></i> Cobros
               </router-link>
               <router-link to="/administracion/egresos"  class="btn btn-app">
-                <i class="fa fa-dollar"><i class="fa fa-long-arrow-up"></i></i> Egresos
+                <i class="fa fa-dollar"><i class="fa fa-long-arrow-up"></i></i> Pagos
+               </router-link>
+               <router-link to="/administracion/egresos"  class="btn btn-app">
+                <i class="fa fa-money"></i></i> Consolidacion <br> Bancaria
                </router-link>
             </div>
             <!-- /.box-body -->

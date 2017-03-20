@@ -70,8 +70,11 @@ Route::post('/register', 'LoginController@register');
 
                 Route::get('/', 'IngresosController@getIngresos');
                 Route::post('/generarCobro', 'IngresosController@generarCobro');
+                Route::get('/pagosPendientes/{casa_id}', 'IngresosController@PagoPendientes');
          });
          //Fin rutas ingresos
+         Route::get('/estcuenta/{casa}', 'CensoController@getEstadoCuenta'); 
+         Route::post('/pagar', 'CensoController@pagarDeuda'); 
 
         Route::post('/pdf', 'CensoController@pdf');
 

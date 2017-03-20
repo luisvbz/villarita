@@ -18,7 +18,10 @@
     "vue-bootstrap-pagination": "2.10.2"
   },
   "dependencies": {
+    "bootstrap": "^3.3.7",
+    "vee-validate": "^2.0.0-beta.25",
+    "vue2-filters": "^0.1.7",
     "vuejs-datepicker": "^0.6.2",
-    "bootstrap": "^3.3.7"
+    "vuelidate": "^0.3.0"
   }
 }

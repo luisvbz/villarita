@@ -8,6 +8,7 @@ use App\Conyuge;
 use App\Casa;
 use App\Hijo;
 use App\Vehiculo;
+use App\Ingreso;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
@@ -19,6 +20,50 @@ class CensoController extends Controller
     	$propietarios = Casa::with('propietario')->orderBy('numero', 'ASC')->get();
 
     	return $propietarios->toJson();
+    }
+
+    public function getEstadoCuenta($casa){
+
+        $c = Casa::where('numero', $casa)->get();
+        $estCuenta = Ingreso::with('tipoIngreso', 'periodo')
+                            ->where('casa_id', $c[0]->id)
+                            ->orderBy('anio', 'DESC')
+                            ->orderBy('codperi', 'DESC')
+                            ->get();
+                            
+        return $estCuenta->toJson();
+    }
+
+    public function pagarDeuda(Request $request)
+    {
+        $pagos = $request->input('pagos');
+
+        $cuotas = $pagos['cuotas'];
+
+        $disp = $pagos['monto'];
+
+        foreach ($cuotas as $cuota) {
+
+            $pago = Ingreso::find($cuota['id']);
+            $pago->forma_pago_id = $pagos['tipoPago'];
+            $pago->cuenta_id = $pagos['cuenta'];
+            $pago->referencia = $pagos['ref'];
+            $pago->fecha_pago = date('Y-m-d');
+            $pago->fecha_pago = date('Y-m-d');
+            //Restando de la cantidad
+            if($disp >= $pago->deuda){
+                $disp = $disp - $pago->deuda;
+                $pago->pago = $pago->deuda;
+            }elseif($disp < $pago->deuda && $disp > 0){
+                $pago->pago = $disp;
+            }else{
+                return "no puedes";
+            }
+            $pago->confirmado = true;
+            $pago->save();
+        }
+
+        return response()->json(array('save' => true));
     }
 
     public function pdf(){

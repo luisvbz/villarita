@@ -27,10 +27,10 @@
             <span v-if="!propietario.inquilino">Propietario</span>
             <span v-else>Inquilino</span></strong>
             <br>
-            <strong>Cedula: </strong>{{ propietario.cedula }}<br>
+            <strong>Cedula: </strong>{{ propietario.cedula | currency('', 0) }}<br>
             <strong>Apellidos: </strong>{{ propietario.apellidos }}<br>
             <strong>Nombres: </strong>{{ propietario.nombres }}<br>
-            <strong>Fech. Nac.: </strong>{{ propietario.fecnac }}<br>
+            <strong>Fech. Nac.: </strong>{{ propietario.fecnac |formatDate('DD/MM/YYYY') }}<br>
             <strong>Hijos: </strong>{{ hijos.length }}<br>
             <strong>Vehiculos: </strong>{{ vehiculos.length }}<br>
         </div>
@@ -38,10 +38,13 @@
         <div class="col-sm-4 invoice-col" v-if="conyuge != null">
             <strong>Conyuge</strong>
             <br>
-            <strong>Cedula: </strong>{{ conyuge.cedula }}<br>
+            <strong>Cedula: </strong>{{ conyuge.cedula  | currency('', 0)}}<br>
             <strong>Apellidos: </strong>{{ conyuge.apellidos }}<br>
             <strong>Nombres: </strong>{{ conyuge.nombres }}<br>
-            <strong>Fech. Nac.: </strong>{{ conyuge.fecnac }}<br>
+            <strong>Fech. Nac.: </strong>{{ conyuge.fecnac |formatDate('DD/MM/YYYY') }}<br>
+        </div>
+        <div class="col-sm-4 invoice-col">
+        <router-link :to="{name: 'propietarios.estadocuenta', params: {casa: casa.numero}}" class="btn btn-success">Estado de cuenta <i class="fa fa-list"></i></router-link>
         </div>
         <!-- /.col -->
       </div>
@@ -69,10 +72,10 @@
                     <tbody>
                       <tr v-for="(hijo, index) in hijos">
                         <td>{{ index + 1 }}</td>
-                        <td>{{ hijo.cedula }}</td>
+                        <td>{{ hijo.cedula |currency('', 0) }}</td>
                         <td class="cap">{{ hijo.apellidos }}</td>
                         <td class="cap">{{ hijo.nombre }}</td>
-                        <td>{{ hijo.fecnac }}</td>
+                        <td>{{ hijo.fecnac | formatDate('DD/MM/YYYY')}}</td>
                         <td>{{ hijo.sexo }}</td>
                         <td>{{ hijo.grado_estudio }}</td>
                       </tr>

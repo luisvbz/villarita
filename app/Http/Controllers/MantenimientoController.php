@@ -120,6 +120,8 @@ class MantenimientoController extends Controller
         $cuenta->email_titular = $data['email'];
         $cuenta->tipo_cuenta = $data['tipo'];
         $cuenta->numero = $data['numero'];
+        $cuenta->capital_inicial = $data['capital'];
+        $cuenta->disponilble = $data['capital'];
         $csave = $cuenta->save();
 
         $cbanco = Cuenta::with('banco')->where('id', $cuenta->id)->get();

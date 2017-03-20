@@ -25,5 +25,10 @@ class Propietario extends Model
     	return $this->hasMany('App\Vehiculo');
     }
 
+    public function deudas(){
+
+        return $this->belongsTo('App\Ingreso');
+    }
+
 
 }

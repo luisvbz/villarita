@@ -78,6 +78,10 @@
 	        		<label>Numero</label>
 	        		<input type="text" v-model="nuevo.numero" name="numero" class="form-control" placeholder="Numero de la cuenta" minlength="20" required>
 	        	</div>
+	        	<div class="form-group">
+	        		<label>Capital inicial</label>
+	        		<input type="text" v-model="nuevo.capital" name="capital" class="form-control" placeholder="0.00" required>
+	        	</div>
 	      </div>
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cerrar</button>
@@ -96,7 +100,7 @@
 			return {
 				cuentas: [],
 				bancos: [],
-				nuevo: {banco: 1, cedula: '', titular: '',email: '', tipo: 1, numero: '' }
+				nuevo: {banco: 1, cedula: '', titular: '',email: '', tipo: 1, numero: '', capital: 0.00 }
 			}
 		},
 		mounted (){

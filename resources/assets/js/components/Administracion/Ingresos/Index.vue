@@ -5,7 +5,7 @@
       
       <form class="form-horizontal" v-on:submit.prevent="generarCobro">
           <div class="col-xs-3">
-              <select class="form-control"  v-model="cobro.tipo_ingreso">
+              <select class="form-control"  v-model="cobro.tipo_ingreso" id="tipocobro">
                 <option v-for="t in tipoingresos" :value="t.id">{{ t.descripcion }}</option>
               </select>
           </div>
@@ -15,12 +15,12 @@
               </select>
           </div>
           <div class="col-xs-2">
-              <select class="form-control" v-model="cobro.codperi">
+              <select class="form-control" v-model="cobro.codperi" id="periodo">
                 <option v-for="p in periodos" :value="p.cod">{{ p.descripcion }}</option>
               </select>
           </div>
           <div class="col-xs-2">
-              <input type="text" class="form-control" placeholder="Monto: Ej: 5000.00" v-model="cobro.monto">
+              <input type="number" class="form-control" placeholder="Monto: Ej: 5000.00" v-model="cobro.monto" required>
           </div>
           <div class="col-xs-2">
             <button class="btn btn-primary" type="submit"><i class="fa fa-dollar"></i> Generar cobro</button>
@@ -53,9 +53,9 @@
                     <input type="checkbox" :id="casa.casa_id" v-bind:value="casa.casa_id" v-model="cobro.casas">
                     </td>
                     <td>{{ casa.numero}}</td>
-                    <td>{{ casa.propietario}}</td>
+                    <td>{{ casa.propietario }}</td>
                     <td style="text-align: right">Bs. {{ casa.saldo}}</td>
-                    <td style="text-align: center"><button class="btn btn-success"><i class="fa fa-list"></i> Estado de Cuenta</button></td>
+                    <td style="text-align: center"><router-link :to="{name: 'admin.estcuenta', params: { casa: casa.numero}}" class="btn btn-success"><i class="fa fa-list"></i> Estado de Cuenta</button></td>
                   </tr>
                 </tbody>
               </table>
@@ -94,6 +94,9 @@
       {
         return router.push({path: '/'})
       }
+      
+      Pace.restart();
+
      this.getCasas();
      this.getAnios(this.anio);
      this.getTiposIngresos();
@@ -102,6 +105,7 @@
     watch:{
       anio: function(){
         this.getPeriodos(this.anio);
+        this.cobro.anio = this.anio;
         },
       allSelected: function(){
         if(!this.allSelected){
@@ -175,11 +179,48 @@
       },
       generarCobro: function(){
 
-          this.$http.post('/api/ingresos/generarCobro', {cobro: this.cobro}).then(response => {
+          var nomperiodo = $("#periodo :selected").text();
+          var nomtipocobro = $("#tipocobro :selected").text();
 
-                  this.getCasas();
+          if(this.cobro.casas.length == 0){
 
-          });
+              return alert('Debes seleccionar al menos una casa!');
+
+          }
+
+          var r = confirm('Deseas generar: ' + nomtipocobro +', para '+ nomperiodo +', del año fiscal '+ this.anio + '?');
+
+          if(r == true){
+            this.loading = true; 
+            this.$http.post('/api/ingresos/generarCobro', {cobro: this.cobro}).then(response => {
+
+                  if(response.body.save && response.body.casas.length == 0){
+
+                      alert(response.body.msj);
+
+                      return this.getCasas();
+
+                  }else if(response.body.save && response.body.casas.length > 0){
+
+                      alert('Los cobros se generaron, excepto para las casas '+ response.body.casas + ', Ya tenian esta cuota registrada');
+
+                      return this.getCasas();
+
+                  }else if(!response.body.save && response.body.casas.length > 0){
+
+                      alert('Ya este cobro se realizo anteriormente para todas las casas');
+
+                      return this.getCasas();
+                  }else{
+
+                      alert('Ocurrio un error al generar los cobros');
+                  }
+            
+            this.loading = false; 
+
+            });
+          }
+          
       }
     }
   }

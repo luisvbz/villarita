@@ -26,4 +26,14 @@ class Ingreso extends Model
     	return $this->belongsTo('App\User');
     }
 
+    public function periodo()
+    {
+        return $this->belongsTo('App\Periodo', 'codperi', 'cod');
+    }
+
+    public function tipoIngreso()
+    {
+        return $this->belongsTo('App\TipoIngreso', 'tipo_ingreso_id', 'id');
+    }
+
 }

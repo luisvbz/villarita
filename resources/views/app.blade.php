@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html>
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,6 +10,8 @@
   <meta id="token" name="token" value="{{ csrf_token() }}">
   <!-- Bootstrap 3.3.6 -->
   <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+  <!-- Pace -->
+  <script src="plugins/pace/pace.min.js"></script>
   <!-- Font Awesome -->
   <link rel="stylesheet" href="dist/css/icons/css/font-awesome.min.css">
   <!-- Ionicons -->

@@ -17,10 +17,14 @@
 import Vue from 'vue';
 //import VueRouter from 'vue-router';
 import VueResource from 'vue-resource';
+import Vue2Filters from 'vue2-filters';
+
 import router from './routes';
 import auth from './services/auth';
+require('./filters');
 
 Vue.use(VueResource)
+Vue.use(Vue2Filters)
 
 //Importando componentes
 //auth.check();

@@ -29,10 +29,10 @@
                     <td>{{ index + 1 }}</td>
                     <td>{{ casa.calle }}</td>
                     <td>{{ casa.numero }}</td>
-                    <td>{{ casa.propietario.cedula }}</td>
+                    <td>{{ casa.propietario.cedula | currency('', 0) }}</td>
                     <td>{{ casa.propietario.apellidos }}</td>
                     <td>{{ casa.propietario.nombres }}</td>
-                    <td>{{ casa.propietario.telefono1 }}</td>
+                    <td>{{ casa.propietario.telefono1 | phone }}</td>
                     <td><router-link :to="'/propietarios/'+casa.numero" 
                                       class="btn btn-sm btn-primary"
                                       rel="tooltip" title="Ver ficha completa"><i class="fa fa-search-plus"></i></router-link>

@@ -14,6 +14,7 @@ const router = new VueRouter({
         {path:'/propietarios/nuevo', component: require('./components/Propietarios/New.vue')},
         {path:'/propietarios/:id', name:'propietarios.id', component: require('./components/Propietarios/Show.vue')},
         {path:'/propietarios/:id/editar', name:'propietarios.editar', component: require('./components/Propietarios/Editar.vue')},
+        {path: '/propietarios/:casa/estadodecuenta', name: 'propietarios.estadocuenta', component: require('./components/Propietarios/EstadoCuenta.vue')},
         {path:'/mantenimiento', name: 'mmto', component: require('./components/Mantenimiento/Index.vue'),
             children: [
                 {path: 'aniofiscal', name: 'afiscal', component: require('./components/Mantenimiento/Fiscal/Index.vue')},
@@ -26,6 +27,7 @@ const router = new VueRouter({
         { path: '/administracion', name: 'admin', component: require('./components/Administracion/Index.vue'),
             children: [
                 {path: 'ingresos', name: 'admin.ingresos', component: require('./components/Administracion/Ingresos/Index.vue')},
+                {path: 'estadodecuenta/:casa', name: 'admin.estcuenta', component: require('./components/Propietarios/EstadoCuenta.vue')}
                 //{path: 'ingresos', name: 'admin.ingresos', component: require('./components/Administracion/Ingresos/Index.vue')}
             ]},
         { path: '*', redirect: '/'}
