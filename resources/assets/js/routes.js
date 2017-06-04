@@ -8,7 +8,8 @@ const router = new VueRouter({
     linkActiveClass: "active",
     saveScrollPosition: true,
     routes: [
-    	{path:'/', component: require('./components/Index.vue')},
+    	{path:'/', component: require('./components/Webpage.vue')},
+        {path: '/estadodecuenta', name: 'mi.estadocuenta', component: require('./components/Propietarios/EstadoCuenta.vue')},
     	//{path:'/login', component: require('./components/Login.vue')},
         {path:'/propietarios', component: require('./components/Propietarios/Index.vue')},
         {path:'/propietarios/nuevo', component: require('./components/Propietarios/New.vue')},
@@ -27,6 +28,7 @@ const router = new VueRouter({
         { path: '/administracion', name: 'admin', component: require('./components/Administracion/Index.vue'),
             children: [
                 {path: 'ingresos', name: 'admin.ingresos', component: require('./components/Administracion/Ingresos/Index.vue')},
+                {path: 'conban', name: 'admin.conban', component: require('./components/Administracion/Ingresos/Consolidacion.vue')},
                 {path: 'estadodecuenta/:casa', name: 'admin.estcuenta', component: require('./components/Propietarios/EstadoCuenta.vue')}
                 //{path: 'ingresos', name: 'admin.ingresos', component: require('./components/Administracion/Ingresos/Index.vue')}
             ]},

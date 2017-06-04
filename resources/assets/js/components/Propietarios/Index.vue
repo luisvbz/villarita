@@ -68,7 +68,7 @@
     }, 
     mounted(){
       
-      if(!auth.user.authenticated)
+      if(!auth.user.authenticated || auth.user.profile.rol == 3)
       {
         return router.push({path: '/'})
       }

@@ -11,6 +11,9 @@ use App\Vehiculo;
 use App\Ingreso;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use PDF;
+use App\Cuenta;
+use App\Cne;
 
 class CensoController extends Controller
 {
@@ -22,14 +25,24 @@ class CensoController extends Controller
     	return $propietarios->toJson();
     }
 
-    public function getEstadoCuenta($casa){
+    public function getEstadoCuenta($casa, $anio){
 
         $c = Casa::where('numero', $casa)->get();
-        $estCuenta = Ingreso::with('tipoIngreso', 'periodo')
+
+
+        if($anio != 0){
+            $estCuenta = Ingreso::with('tipoIngreso', 'periodo','cuenta')
                             ->where('casa_id', $c[0]->id)
-                            ->orderBy('anio', 'DESC')
-                            ->orderBy('codperi', 'DESC')
+                            ->where('anio', $anio)
+                            ->orderBy('created_at', 'ASC')
                             ->get();
+        }else{
+            $estCuenta = Ingreso::with('tipoIngreso', 'periodo','cuenta')
+                            ->where('casa_id', $c[0]->id)
+                            ->orderBy('created_at', 'ASC')
+                            ->get();
+        }
+        
                             
         return $estCuenta->toJson();
     }
@@ -38,38 +51,57 @@ class CensoController extends Controller
     {
         $pagos = $request->input('pagos');
 
-        $cuotas = $pagos['cuotas'];
+       // return $request->all();
 
-        $disp = $pagos['monto'];
-
-        foreach ($cuotas as $cuota) {
-
-            $pago = Ingreso::find($cuota['id']);
+            $pago = new Ingreso;
+            $pago->casa_id = $request->input('casa_id');
             $pago->forma_pago_id = $pagos['tipoPago'];
             $pago->cuenta_id = $pagos['cuenta'];
             $pago->referencia = $pagos['ref'];
             $pago->fecha_pago = date('Y-m-d');
-            $pago->fecha_pago = date('Y-m-d');
-            //Restando de la cantidad
-            if($disp >= $pago->deuda){
-                $disp = $disp - $pago->deuda;
-                $pago->pago = $pago->deuda;
-            }elseif($disp < $pago->deuda && $disp > 0){
-                $pago->pago = $disp;
-            }else{
-                return "no puedes";
-            }
+            $pago->monto = $pagos['monto'];
+            $pago->tipo = 'C';
+            $pago->tipo_ingreso_id = $pagos['tipoPago'];
             $pago->confirmado = true;
-            $pago->save();
-        }
+            $pago->anio = $request->input('anio');;
+            $pago->codperi = '0'.date('m');
+            $psave = $pago->save();
+
+            //return $pagos['tipoPago'];
+            if($psave == true && $pagos['tipoPago'] != 3){
+
+                $cuenta = Cuenta::find($pagos['cuenta']);
+                $cuenta->disponible = $cuenta->disponible + $pagos['monto'];
+                $cuenta->save();
+            }
+
 
         return response()->json(array('save' => true));
     }
 
-    public function pdf(){
+    public function pdf(Request $request){
 
-        $pdf = \App::make('dompdf.wrapper');
-        $pdf->loadHTML('<h1>Prueba 1</h1>');
+        $id_casa = $request->input('casa_id');
+        $anio = $request->input('anio');
+        $propietario = $request->input('propietario');
+        $numero = $request->input('numero');
+
+         if($anio != 0){
+            $estCuenta = Ingreso::with('tipoIngreso', 'periodo','cuenta')
+                            ->where('casa_id',$id_casa)
+                            ->where('anio', $anio)
+                            ->orderBy('created_at', 'ASC')
+                            ->get();
+        }else{
+            $estCuenta = Ingreso::with('tipoIngreso', 'periodo','cuenta')
+                            ->where('casa_id', $id_casa)
+                            ->orderBy('created_at', 'ASC')
+                            ->get();
+        }
+
+
+        $pdf =  PDF::loadView('reportes.estcuenta', compact('estCuenta', 'propietario','numero'));
+        //$pdf->loadView('reportes.estcuenta', $estcuenta);
         return $pdf->download();
     }
 
@@ -387,5 +419,12 @@ class CensoController extends Controller
         }
 
         return response()->json(['save' => true, 'msj' => 'El registro fue actualizado exitosamente']);
+    }
+
+    public function buscarCne($nac, $cedula){
+
+        $result = Cne::buscar($nac, $cedula);
+
+        return $result;
     }
 }

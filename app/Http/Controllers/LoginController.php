@@ -55,6 +55,7 @@ class LoginController extends Controller
         $data['name'] = $request->user()->name;
         $data['username'] = $request->user()->username;
         $data['rol'] = $request->user()->role_id;
+        $data['casa'] = $request->user()->casa;
         return response()->json([
             'data' => $data,
         ]);

@@ -13,7 +13,7 @@
               		<div class="col-sm-2">
               			<button class="btn btn-primary" v-on:click="getPeriodos(anio)"><i class="fa fa-filter"></button>
               		</div>
-              		<button class="btn btn-xs btn-primary pull-right" data-toggle="modal" data-target="#nuevo">Nuevo <i class="fa fa-plus"></i></button>
+              		<button class="btn btn-xs btn-primary pull-right" @click="showModal= true">Nuevo <i class="fa fa-plus"></i></button>
             	</div>
             <div class="box-body">
             	<table class="table table-striped">
@@ -43,17 +43,10 @@
 		</div>
 	</div>
 </div>
-<div class="modal fade" id="nuevo" tabindex="-1" role="dialog" aria-labelledby="Nuevo" aria-hidden="true">
-	<form v-on:submit.prevent="save">
-	<div class="modal-dialog">
-	    <div class="modal-content">
-	      <div class="modal-header">
-	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	          <span aria-hidden="true">×</span></button>
-	        <h4 class="modal-title">Registrar nuevo periodo</h4>
-	      </div>
-	      <div class="modal-body">
-	    	<div class="form-group">
+<modal v-if="showModal" @close="showModal = false">
+    <h3 slot="header">Registrar nuevo periodo</h3>
+    <div slot="body">
+    	<div class="form-group">
 	    		<label>Mes</label>
 	    		<select class="form-control" v-model="nuevo.mes">
 	    			<option value="001/Enero">Enero</option>
@@ -76,19 +69,15 @@
               		<option v-for="anio in anios" :value="anio.aniofiscal">{{ anio.aniofiscal }}</option>
               	</select>
 	    	</div>
-	      </div>
-	      <div class="modal-footer">
-	        <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cerrar</button>
-	        <button type="submit" class="btn btn-primary">Guardar <i class="fa fa-save"></i></button>
-	      </div>
-	    </div>
-	  </div>
-	  </form>
-	</div>
-</div>
+    </div>
+    <button  slot="footer" class="btn btn-success" @click="save()">
+        Guargar <i class="fa fa-save"></i>
+    </button>
+</modal>
 </template>
 
 <script>
+import modal from '../../modal.vue';
 	export default {
 		data () {
 			return {
@@ -96,7 +85,8 @@
 				anios: [],
 				anio: '2017',
 				loading: false,
-				nuevo: {mes: '001/Enero', anio: '2017'}
+				nuevo: {mes: '001/Enero', anio: '2017'},
+				showModal: false
 			}
 		},
 		mounted (){
@@ -120,7 +110,7 @@
 				this.$http.get('/api/periodos/'+anio).then(response => {
 					this.periodos = [];
 					if(response.body.length == 0){
-						alert('No hay periodos para el año '+ anio);
+						this.$swal('No hay periodos para el año ', 'error');
 					}
 					for (var i = 0; i < response.body.length; i++) {
 						this.periodos.push(response.body[i])	
@@ -134,12 +124,17 @@
 
 				this.$http.post('/api/periodos',{periodo: this.nuevo.mes, anio: this.nuevo.anio}).then(response =>{
 					if(!response.body.save){
-
-						return alert(response.body.msj);
+						this.showModal = false;
+						return this.$swal({title: "Error!",
+										   html: response.body.msj,
+										   type: 'error'});
+						this.showModal = true;
 
 					}else{
-
-						alert(response.body.msj);
+						this.showModal = false;
+						this.$swal({title: "Exito!",
+										   html: response.body.msj,
+										   type: 'success'});
 						this.getPeriodos(this.anio);
 
 					}
@@ -147,6 +142,9 @@
 
 				})			
 			}
+		},
+		components:{
+			modal
 		}
 	}
 </script>

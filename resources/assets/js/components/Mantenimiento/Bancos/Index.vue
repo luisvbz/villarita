@@ -5,7 +5,7 @@
 			<div class="box box-info">
 				<div class="box-header with-border">
               		<h3 class="box-title">Cuentas bancarias</h3>
-              		<button class="btn btn-xs btn-primary pull-right" data-toggle="modal" data-target="#nuevo">Nueva <i class="fa fa-plus"></i></button>
+              		<button class="btn btn-xs btn-primary pull-right" @click="showModal = true">Nueva <i class="fa fa-plus"></i></button>
             	</div>
             <div class="box-body">
             	<table class="table table-striped">
@@ -38,75 +38,63 @@
 		</div>
 	</div>
 </div>
-<div class="modal fade" id="nuevo" tabindex="-1" role="dialog" aria-labelledby="Nuevo" aria-hidden="true">
-	<form v-on:submit.prevent="save">
-	<div class="modal-dialog">
-	    <div class="modal-content">
-	      <div class="modal-header">
-	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	          <span aria-hidden="true">×</span></button>
-	        <h4 class="modal-title">Registrar una nueva cuenta</h4>
-	      </div>
-	      <div class="modal-body">
-	        
-	        	<div class="form-group">
-	        		<label>Entidad bancario</label>
-	        		<select class="form-control" required v-model="nuevo.banco">
-	        			<option v-for="banco in bancos" :value="banco.id">{{ banco.descripcion }}</option>
-	        		</select>
-	        	</div>
-	        	<div class="form-group">
-	        		<label>Cedula del titular</label>
-	        		<input type="text" v-model="nuevo.cedula" name="cedula" class="form-control" placeholder="Ingrese la ceduladel titular de la cuenta" required>
-	        	</div>
-	        	<div class="form-group">
-	        		<label>Titular</label>
-	        		<input type="text" v-model="nuevo.titular" name="titular" class="form-control" placeholder="Razon social del titular de la cuenta" required>
-	        	</div>
-	        	<div class="form-group">
-	        		<label>Email</label>
-	        		<input type="email" v-model="nuevo.email" name="email" class="form-control" placeholder="Razon social del titular de la cuenta" required>
-	        	</div>
-	        	<div class="form-group">
-	        		<label>Tipo</label>
-	        		<select class="form-control" v-model="nuevo.tipo">
-	        			<option value="1">Ahorros</option>
-	        			<option value="2">Corrientes</option>
-	        		</select>
-	        	</div>
-	        	<div class="form-group">
-	        		<label>Numero</label>
-	        		<input type="text" v-model="nuevo.numero" name="numero" class="form-control" placeholder="Numero de la cuenta" minlength="20" required>
-	        	</div>
-	        	<div class="form-group">
-	        		<label>Capital inicial</label>
-	        		<input type="text" v-model="nuevo.capital" name="capital" class="form-control" placeholder="0.00" required>
-	        	</div>
-	      </div>
-	      <div class="modal-footer">
-	        <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cerrar</button>
-	        <button type="submit" class="btn btn-primary">Guardar <i class="fa fa-save"></i></button>
-	      </div>
-	    </div>
-	  </div>
-	  </form>
-	</div>
-</div>
+<modal v-if="showModal" @close="showModal = false">
+    <h3 slot="header">Registrar una nueva cuenta</h3>
+    <div slot="body">
+    	<form v-on:submit.prevent="save">
+    	<div class="form-group">
+    		<select class="form-control" required v-model="nuevo.banco">
+    			<option v-for="banco in bancos" :value="banco.id">{{ banco.descripcion }}</option>
+    		</select>
+    	</div>
+    	<div class="form-group">
+    		<input type="text" v-model="nuevo.cedula" name="cedula" class="form-control" placeholder="Cedula" required>
+    	</div>
+    	<div class="form-group">
+    		<input type="text" v-model="nuevo.titular" name="titular" class="form-control" placeholder="Titular de la cuneta" required>
+    	</div>
+    	<div class="form-group">
+    		<input type="email" v-model="nuevo.email" name="email" class="form-control" placeholder="Correo electronico" required>
+    	</div>
+    	<div class="form-group">
+    		<select class="form-control" v-model="nuevo.tipo">
+    			<option value="1">Ahorros</option>
+    			<option value="2">Corrientes</option>
+    		</select>
+    	</div>
+    	<div class="form-group">
+    		<input type="text" v-model="nuevo.numero" name="numero" class="form-control" placeholder="Numero de la cuenta" minlength="20" required>
+    	</div>
+    	<div class="form-group">
+    		<input type="text" v-model="nuevo.capital" name="capital" class="form-control" placeholder="Capital inicial" required>
+    	</div>
+    	<hr>
+    	    <button  type="submit" class="btn btn-success pull-right">
+       			 Guargar <i class="fa fa-save"></i>
+    		</button>
+    </form>
+    </div>
+</modal>
 </template>
 
 <script>
+import modal from '../../modal.vue';
 	export default {
 		data () {
 			return {
 				cuentas: [],
 				bancos: [],
-				nuevo: {banco: 1, cedula: '', titular: '',email: '', tipo: 1, numero: '', capital: 0.00 }
+				showModal: false,
+				nuevo: {banco: 1, cedula: '', titular: '',email: '', tipo: 1, numero: '', capital: '' }
 			}
 		},
 		mounted (){
 
 			this.getCuentas();
 			this.getbancos();
+		},
+		components:{
+			modal
 		},
 		methods: {
 			getCuentas: function(){
@@ -136,13 +124,17 @@
 				this.$http.post('/api/cuentas', {data: this.nuevo }).then(response => {
 						var data = response.body;
 						if(!data.save){
-							return alert(data.msj);
+							this.showModal = false;
+							return this.$swal({title: "Error!",
+										   html: data.msj,
+										   type: 'error'});
 						}else{
-
-							alert(data.msj);
+							this.showModal = false;
+							this.$swal({title: "Exito!",
+										   html: response.body.msj,
+										   type: 'success'});
 							this.cuentas.push(data.cuenta);
 							this.nuevo = {banco: 1, cedula: '', titular: '',email: '', tipo: 1, numero: '' };
-							$("#nuevo").modal("hide");
 						}
 
 
@@ -159,8 +151,14 @@
 					this.$http.delete('/api/cuentas/'+cuenta.id).then(response => {
 						var data = response.body;
 
-						alert(data.msj);
+						this.$swal({title: "Exito!",
+										   html: response.body.msj,
+										   type: 'success'});
 						this.cuentas.splice(index, 1);
+					}, response => {
+						this.$swal({title: "Error!",
+										   html: 'La cuenta no puede ser eliminada!',
+										   type: 'error'});
 					});
 				}
 			}

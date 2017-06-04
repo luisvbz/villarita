@@ -31,6 +31,7 @@ export default {
         })
     },
     signin(context, username, password) {
+        context.showModal = true;
         Vue.http.post(
             'api/login',
             {
@@ -44,11 +45,11 @@ export default {
 
             this.user.authenticated = true
             this.user.profile = response.data.data
-
             this.check();
             router.push({
                 path: '/'
             })
+            context.showModal = false
         }, response => {
             context.error = true
         })

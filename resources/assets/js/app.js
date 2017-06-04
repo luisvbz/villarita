@@ -18,13 +18,17 @@ import Vue from 'vue';
 //import VueRouter from 'vue-router';
 import VueResource from 'vue-resource';
 import Vue2Filters from 'vue2-filters';
-
+import VueSweetAlert from 'vue-sweetalert';
+import Dialog from 'hsy-vue-dialog'
 import router from './routes';
 import auth from './services/auth';
 require('./filters');
 
 Vue.use(VueResource)
 Vue.use(Vue2Filters)
+Vue.use(Dialog)
+Vue.use(VueSweetAlert)
+
 
 //Importando componentes
 //auth.check();

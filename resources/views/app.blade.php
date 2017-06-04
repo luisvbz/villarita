@@ -55,8 +55,6 @@
 
 </div>
 <!-- ./wrapper -->
-
-    <script src="{{ asset('js/app.js') }}"></script>
     <!-- jQuery 2.2.3 -->
     <script src="{{ asset('plugins/jQuery/jquery-2.2.3.min.js') }}"></script>
     <!-- jQuery UI 1.11.4 -->
@@ -90,5 +88,7 @@
     <script src="{{ asset('plugins/fastclick/fastclick.js') }}"></script>
     <!-- AdminLTE App -->
     <script src="{{ asset('dist/js/app.min.js') }}"></script>
+
+    <script src="{{ asset('js/app.js') }}"></script>
     </body>
 </html>

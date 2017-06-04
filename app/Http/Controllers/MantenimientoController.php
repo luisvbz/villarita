@@ -14,7 +14,7 @@ class MantenimientoController extends Controller
 {
     public function getAnios()
     {
-    	$anios = AnioFiscal::all();
+    	$anios = AnioFiscal::orderBy('aniofiscal', 'DESC')->get();;
     	return $anios->toJson();
     }
 
@@ -31,9 +31,14 @@ class MantenimientoController extends Controller
     		return response()->json(['save' => false, 'msj' => 'Este año ya esta registrado!', 'anio' => null]);
     	}
 
+        if($anio > date('Y')){
+
+            return response()->json(['save' => false, 'msj' => 'No puedes registrar un año posterior al actual!', 'anio' => null]);   
+        }
+
     	$a = new AnioFiscal;
     	$a->aniofiscal = $anio;
-    	$a->descripcion = $desc;
+    	$a->descripcion = "Año Fiscal ".$anio;
     	$a->activo = true;
     	$aniosave = $a->save();
 
@@ -75,6 +80,13 @@ class MantenimientoController extends Controller
 
     		return response()->json(['save' => false, 'msj' => 'No puedes crear el mismo periodo en este año']);
     	}
+
+        $mesPeriodo = substr($periodo[0], 1,3);
+
+        if($anio > date('Y') && $mesPeriodo > date('m')){
+
+            return response()->json(['save' => false, 'msj' => 'No puedes crear periodos posteriores al mes actual']);
+        }
 
     	$anio = AnioFiscal::where('aniofiscal', $anio)->get();
 
@@ -121,7 +133,7 @@ class MantenimientoController extends Controller
         $cuenta->tipo_cuenta = $data['tipo'];
         $cuenta->numero = $data['numero'];
         $cuenta->capital_inicial = $data['capital'];
-        $cuenta->disponilble = $data['capital'];
+        $cuenta->disponible = $data['capital'];
         $csave = $cuenta->save();
 
         $cbanco = Cuenta::with('banco')->where('id', $cuenta->id)->get();
@@ -130,7 +142,7 @@ class MantenimientoController extends Controller
             return response()->json(['save' => false, 'msj' => 'Ocurrio un error al guardar la cuenta!']);
         }
 
-        return response()->json(['save' => true, 'msj' => 'La cuenta se regustra exitosamente!', 'cuenta' => $cbanco[0]]);
+        return response()->json(['save' => true, 'msj' => 'La cuenta se registró exitosamente!', 'cuenta' => $cbanco[0]]);
     }
 
     public function deleteCuenta($id)

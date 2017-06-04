@@ -31,6 +31,10 @@ Route::post('/register', 'LoginController@register');
         Route::get('/casas/{id}', 'CensoController@getCasa');
         Route::put('/casas/{id}', 'CensoController@updateCasa');
 
+        //Buscar personas cne
+        Route::get('/cne/{nac}/{cedula}', 'CensoController@buscarCne');
+        //
+
         /* Anio Fiscal */
         Route::get('/aniofiscal/', 'MantenimientoController@getAnios');
         Route::post('/aniofiscal/', 'MantenimientoController@saveAnios');
@@ -72,8 +76,14 @@ Route::post('/register', 'LoginController@register');
                 Route::post('/generarCobro', 'IngresosController@generarCobro');
                 Route::get('/pagosPendientes/{casa_id}', 'IngresosController@PagoPendientes');
          });
+
+         Route::group(['prefix' => 'reporte'], function () {
+
+                Route::post('/etadocuenta', 'CensoController@pdf');
+                
+         });
          //Fin rutas ingresos
-         Route::get('/estcuenta/{casa}', 'CensoController@getEstadoCuenta'); 
+         Route::get('/estcuenta/{casa}/{anio}', 'CensoController@getEstadoCuenta'); 
          Route::post('/pagar', 'CensoController@pagarDeuda'); 
 
         Route::post('/pdf', 'CensoController@pdf');

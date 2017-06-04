@@ -19,14 +19,17 @@
         <ul class="nav navbar-nav">
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <img src="dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
-              <span class="hidden-xs">{{ auth.user.profile.name }}</span>
+              <!--<img src="dist/img/user2-160x160.jpg" class="user-image" alt="User Image">-->
+              <span class="hidden-xs"><b>{{ auth.user.profile.name }}</b>
+              <i class="fa fa-user"></i>
+              </span>
             </a>
             <ul class="dropdown-menu">
               <!-- User image -->
               <li class="user-header">
-                <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
-
+              <div class="img-circle icono">
+                  {{ inicial }}
+              </div>
                 <p>
                   {{ auth.user.profile.name }}
                   <small>Administrador</small>
@@ -66,7 +69,7 @@
                     <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                   </div>
                   <div class="alert alert-danger" v-if="error">
-            <p>There was an error, unable to sign in with those credentials.</p>
+            <p>Ocurrio un error.</p>
         </div>
                 
               </li>
@@ -93,16 +96,19 @@
       <!-- Sidebar user panel -->
       <div v-if="auth.user.authenticated">
         <div class="user-panel" v-if="auth.user.authenticated">
-        <div class="pull-left image">
-          <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+        <div class="pull-left image icon">
+          <!--<img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">-->
+          <div class="img-circle">
+              {{ inicial }}
+          </div>
         </div>
         <div class="pull-left info">
           <p>{{ auth.user.profile.name }}</p>
-          <small>Ultima sesion: 24/02/2017</small>
+          <small>Bienvenido(a)</small>
         </div>
       </div>
       <!-- search form -->
-      <form class="sidebar-form" v-on:submit.prevent="buscarCasa">
+      <form class="sidebar-form" v-on:submit.prevent="buscarCasa" v-if="rol_informatica || rol_administrador">
         <div class="input-group">
           <input type="text" class="form-control" placeholder="Buscar..." v-model="buscar">
               <span class="input-group-btn">
@@ -117,7 +123,8 @@
       <ul class="sidebar-menu">
         <li class="header">MENU PRINCIPAL</li>
         <li :class="$route.path == '/' ? 'active': ''"><router-link to="/"><i class="fa fa-home"></i> <span>Inicio</span></router-link></li>
-        <li v-if="auth.user.authenticated && auth.user.profile.rol != 5" :class="$route.path == '/propietarios' ? 'active': ''"><router-link to="/propietarios"><i class="fa fa-group"></i> <span>Censo</span></router-link></li>
+        <li v-if="rol_administrador || rol_informatica" :class="$route.path == '/propietarios' ? 'active': ''"><router-link to="/propietarios"><i class="fa fa-group"></i> <span>Propietarios</span></router-link></li>
+        <li v-if="rol_propietario" :class="$route.path == '/estadodecuenta' ? 'active': ''"><router-link to="/estadodecuenta"><i class="fa fa-money"></i> <span>Mi estado de cuenta</span></router-link></li>
         <li :class="$route.path == '/mantenimiento' ? 'active': ''" v-if="rol_administrador || rol_informatica"><router-link to="/mantenimiento"><i class="fa fa-dashboard"></i> <span>Mantenimiento</span></router-link></li>
         <li :class="$route.path == '/administracion' ? 'active': ''" v-if="rol_administrador || rol_informatica"><router-link to="/administracion"><i class="fa fa-tasks"></i> <span>Administracion</span></router-link></li>
       </ul>
@@ -137,12 +144,20 @@
     </section>
     <!-- /.content -->
   </div>
+  <load v-if="showModal" @close="showModal = false">
+    <h3 slot="header"></h3>
+    <div slot="body">
+      <center><i class="fa fa-spinner fa-spin" style="color: #00a65a; font-size:80px;"></i>
+      <h4>Entrando por favor espere...</h4>
+    </div></center> 
+</load>
  </div>
 </template>
 <script>
   import auth from '../services/auth';
   import Ruta from './Ruta.vue';
   import router from '../routes';
+  import load from '../components/load.vue';
   export default {
     data() {
             return {
@@ -151,11 +166,13 @@
                 username: null,
                 password: null,
                 error: false,
-                buscar: ''
+                buscar: '',
+                showModal: false
             }
         },
         mounted(){
                 auth.check()
+                console.log(this.auth.user.profile)
         },
         computed: {
           rol_informatica: function(){
@@ -173,6 +190,21 @@
             }
 
             return false
+          },
+          rol_propietario: function(){
+
+            if(auth.user.authenticated && auth.user.profile.rol == 3){
+              return true
+            }
+
+            return false
+          },
+
+          inicial: function(){
+
+            let inicial = this.auth.user.profile.name
+
+            return inicial.substr(0,1);
           }
         },
         methods: {
@@ -195,7 +227,8 @@
             }
         },
         components: {
-          Ruta
+          Ruta,
+          load
         }
       }
 </script>
@@ -211,5 +244,32 @@
 
   .fade-enter, .fade-leave-active{
     opacity: 0;
+  }
+
+  .icon{
+      background-color: #00a65a;
+      color: #fff;
+      font-size: 35px;
+      width: 50px;
+      border-radius: 50%;
+      text-align: center;
+      text-transform: bold;
+  }
+
+   .icono{
+      background-color: #333;
+      color: #fff;
+      font-size: 60px;
+      border-radius: 50%;
+      text-align: center;
+      text-transform: bold;
+      z-index: 5;
+      height: 90px;
+      width: 90px;
+      vertical-align: middle;
+      border: 3px solid;
+      border-color: transparent;
+      border-color: rgba(255,255,255,0.2);
+      margin-left: 80px;
   }
 </style>

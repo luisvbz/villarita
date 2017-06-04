@@ -5,7 +5,7 @@
 			<div class="box box-info">
 				<div class="box-header with-border">
               		<h3 class="box-title">Apertura y cierres de año fiscal</h3>
-              		<button class="btn btn-xs btn-primary pull-right" data-toggle="modal" data-target="#nuevo">Nuevo <i class="fa fa-plus"></i></button>
+              		<button class="btn btn-xs btn-primary pull-right" @click="nuevo = true">Nuevo <i class="fa fa-plus"></i></button>
             	</div>
             <div class="box-body">
             	<table class="table table-striped">
@@ -30,18 +30,10 @@
 		</div>
 	</div>
 </div>
-<div class="modal fade" id="nuevo" tabindex="-1" role="dialog" aria-labelledby="Nuevo" aria-hidden="true">
-	<form v-on:submit.prevent="save">
-	<div class="modal-dialog">
-	    <div class="modal-content">
-	      <div class="modal-header">
-	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	          <span aria-hidden="true">×</span></button>
-	        <h4 class="modal-title">Registrar nuevo año fiscal</h4>
-	      </div>
-	      <div class="modal-body">
-	        
-	        	<div class="form-group">
+<modal v-if="nuevo" @close="nuevo = false">
+    <h3 slot="header">Registrar nuevo año fiscal</h3>
+    <div slot="body">
+    	<div class="form-group">
 	        		<label>Año</label>
 	        		<select class="form-control" required v-model="anio">
 	        			<option value="2015">2015</option>
@@ -49,36 +41,33 @@
 	        			<option value="2017">2017</option>
 	        			<option value="2018">2018</option>
 	        			<option value="2019">2019</option>
-	        			<option value="2020">2020</option>
+	        			<option value="2021">2021</option>
+	        			<option value="2022">2022</option>
+	        			<option value="2022">2022</option>
+	        			<option value="2022">2022</option>
+	        			<option value="2022">2022</option>
+	        			<option value="2022">2022</option>
 	        		</select>
 	        	</div>
-	        	<div class="form-group">
-	        		<label>Descripcion</label>
-	        		<input type="text" v-model="descripcion" name="descripcion" class="form-control" placeholder="Ingrese una descripcion" required>
-	        	</div>
-	      </div>
-	      <div class="modal-footer">
-	        <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cerrar</button>
-	        <button type="submit" class="btn btn-primary">Guardar <i class="fa fa-save"></i></button>
-	      </div>
-	    </div>
-	  </div>
-	  </form>
-	</div>
-</div>
+    </div>
+    <button  slot="footer" class="btn btn-success" @click="save()">
+        Guargar <i class="fa fa-save"></i>
+    </button>
+</modal>
 </template>
 
 <script>
+import modal from '../../modal.vue';
 	export default {
 		data () {
 			return {
 				anios: [],
-				anio: '2015',
-				descripcion: ''
+				anio: '2016',
+				descripcion: '',
+				nuevo: false
 			}
 		},
 		mounted (){
-
 			this.getAnios();
 		},
 		methods: {
@@ -94,22 +83,25 @@
 			},
 			save: function(){
 				
-				this.$http.post('/api/aniofiscal', {anio: this.anio, desc: this.descripcion }).then(response => {
+				this.$http.post('/api/aniofiscal', {anio: this.anio }).then(response => {
 						var data = response.body;
 						if(!data.save){
-							return alert(data.msj);
+							this.nuevo = false;
+							return this.$swal({title: "Error!", text: data.msj, type: 'error'});
 						}else{
-
-							alert(data.msj);
+							this.$swal({title: "Exito!", text: data.msj, type: 'success'});
 							this.anios.push(data.anio);
 						}
 
-
+						this.nuevo = false;
 
 				}, response => {
 
 				})
 			}
+		},
+		components:{
+			modal
 		}
 	}
 </script>

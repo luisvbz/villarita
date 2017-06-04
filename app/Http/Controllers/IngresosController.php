@@ -17,17 +17,17 @@ class IngresosController extends Controller
     						->orderBy('casa_id', 'ASC')
     						->get();*/
 
-    	$ingresos = DB::select("SELECT a.id, a.numero, b.id as p_id, b.apellidos, b.nombres, sum(c.deuda) as deuda,sum(c.pago) as pago 
+    	$ingresos = DB::select("SELECT a.id, a.numero, b.id as p_id, b.apellidos, b.nombres, sum(c.monto) as monto 
 								FROM casas a
 								INNER JOIN propietarios b ON b.id = a.propietario_id
 								LEFT JOIN ingresos c ON c.casa_id = a.id
 								GROUP BY a.id, a.numero, b.id, b.apellidos, b.nombres
-								ORDER BY a.id ASC");
+								ORDER BY a.numero ASC");
     	$data = array();
 
     	foreach ($ingresos as $i) {
 
-                $saldo = ($i->pago ) - ($i->deuda);     
+                $saldo = ($i->monto);     
 
     		
     		array_push($data, array('casa_id' => $i->id,
@@ -66,10 +66,10 @@ class IngresosController extends Controller
                 $new = new Ingreso;
                 $new->casa_id = $value;
                 $new->tipo_ingreso_id = $cobro['tipo_ingreso'];
+                $new->tipo = 'D';
                 $new->anio = $cobro['anio'];
                 $new->codperi = $cobro['codperi'];
-                $new->deuda = $cobro['monto'];
-                $new->pago = 0.00;
+                $new->monto = -$cobro['monto'];
                 $new->save();    
             }
     		
@@ -100,5 +100,9 @@ class IngresosController extends Controller
                             ->get();
 
         return $Pendientes->toJson();
+    }
+
+    public function consolidacion(){
+        
     }
 }

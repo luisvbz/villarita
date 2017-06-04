@@ -37,7 +37,7 @@
                   <label for="cedula" class="col-sm-2 control-label">Cedula de Identidad</label>
 
                   <div class="col-sm-4">
-                    <input class="form-control" id="cedula" placeholder="Ej: 1234567" type="text" v-model="propietario.cedula" required>
+                    <input class="form-control" id="cedula"  v-on:keydown.enter="buscarCne" placeholder="Ej: 1234567" type="text" v-model="propietario.cedula" required>
                   </div>
                 </div>
                 <div class="form-group">
@@ -298,6 +298,16 @@ export default {
 
 			this.hijos.push({cedula: '', apellidos: '', nombres: '', fechcan: '', sexo: '', grado: ''});
 		},
+    buscarCne: function(){
+      let url= '/api/cne/V/'+this.propietario.cedula;
+      console.log(url);
+        this.$http.get(url).then(response => {
+            this.propietario.apellidos = response.body.apellidos;
+            this.propietario.nombres = response.body.nombres; 
+        }, response => {
+
+        });
+    },
 		removeHijo: function(){
 			var index = (this.hijos.length);
 			var last = index - 1;

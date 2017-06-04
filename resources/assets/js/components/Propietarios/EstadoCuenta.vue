@@ -1,13 +1,34 @@
 <template>
 	<div>
   <div class="row">
-     <div class="col-md-12 form-horizontal">
-          <div class="col-xs-3">
-            <button class="btn btn-success" data-toggle="modal" data-target="#nuevoPago"><i class="fa fa-dollar"></i> Aplicar pago</button>
-            <button class="btn btn-warning"> Imprimir <i class="fa fa-print"></i></button>
+     <div class="col-md-10 form-horizontal" v-if="auth.user.profile.rol == 1 || auth.user.profile.rol == 2">
+          <div class="col-xs-2">
+            <button class="btn btn-success" @click="showModal = true"><i class="fa fa-dollar"></i> Aplicar pago</button>
+          </div>
+          <div class="col-xs-2">
+              <button class="btn btn-warning" v-if="!descargando" @click="getPdf()">Descargar  <i class="fa fa-download"></i></button>
+              <button class="btn btn-warning" disabled="" v-else>Descargando  <i class="fa fa-spinner fa-spin"></i></button>
+          </div>
+          <div class="col-xs-2">
+            <select class="form-control" v-model="anio">
+              <option v-for="anio in anios" :value="anio.aniofiscal">{{ anio.aniofiscal }}</option>
+              <option value="0">Todo</option>
+            </select>
+          </div>
+          </div>
+          <div class="col-md-10 form-horizontal" v-else>
+          <div class="col-xs-2">
+            <select class="form-control" v-model="anio">
+              <option v-for="anio in anios" :value="anio.aniofiscal">{{ anio.aniofiscal }}</option>
+              <option value="0">Todo</option>
+            </select>
+          </div>
+            <div class="col-xs-2">
+              <button class="btn btn-warning" v-if="!descargando" @click="getPdf()">Descargar  <i class="fa fa-download"></i></button>
+              <button class="btn btn-warning" disabled="" v-else>Descargando  <i class="fa fa-spinner fa-spin"></i></button>
+          </div>
           </div>
       </div>
-   </div>
    <br>
 	<section class="invoice">
       <!-- title row -->
@@ -25,75 +46,101 @@
       <!-- /.row -->
 
       <!-- Table row -->
-    <div class="row">
+  <div class="row" v-if="cargando">
+      <center>
+        <i class="fa fa-spinner fa-spin" style="color: #00a65a; font-size:40px;"></i>
+        <br>Cargando estado de cuenta ...
+      </center>
+  </div>
+    <div class="row" v-else>
         <div class="col-xs-10 col-xs-offset-1">
-	       <table class="tg">
-			  <tr>
-			    <th class="tg-ipa1" colspan="6">ESTADO DE CUENTA</th>
-			  </tr>
-			  <tr>
-			    <td class="tg-yeb6">Cedula</td>
-			    <td class="tg-031e">{{ propietario.cedula | currency('', 0)}}</td>
-			    <td class="tg-yeb6">Propietario</td>
-			    <td class="tg-031e">{{ propietario.apellidos }}, {{ propietario.nombres }}</td>
-			    <td class="tg-yeb6">Casa</td>
-			    <td class="tg-031e">{{ casa.numero }}</td>
-			  </tr>
-			<!--  <tr>
-			    <td class="tg-031e"></td>
-			    <td class="tg-031e"></td>
-			    <td class="tg-031e"></td>
-			    <td class="tg-031e"></td>
-			    <td class="tg-031e"></td>
-			    <td class="tg-031e"></td>
-			  </tr>-->
-			  <tr>
-			    <td class="tg-ipa1" colspan="6">DETALLES DE CUENTA</td>
-			  </tr>
-			  <tr>
-			    <td class="tg-wr85">Nº</td>
-			    <td class="tg-wr85">FECHA</td>
-			    <td class="tg-wr85" colspan="2">DETALLES DEL MOVIMIENTO</td>
-			    <td class="tg-wr85">DEBITOS</td>
-			    <td class="tg-wr85">CREDITOS</td>
-			  </tr>
-			  <tr v-for="(c, index) in cuentas">
-			    <td class="tg-031e">{{ index + 1 }}</td>
-			    <td class="tg-031e">{{ c.created_at | formatDate('DD/MM/YYYY') }}</td>
-			    <td class="tg-031e" colspan="2">{{ c.tipo_ingreso.descripcion }} / {{ c.periodo.descripcion }} {{ c.anio }}</td>
-			    <td class="tg-031e">{{ c.deuda | currency('Bs. ')}}</td>
-          <td class="tg-031e" v-if="c.confirmado">
-            <span style="color: #00a65a;">{{ c.pago | currency('Bs. ')}} <i class="fa fa-check-circle"></i></span>
-          </td>
-			    <td class="tg-031e" v-else><span :style="c.pago > 0 ? 'color: #f39c12;' : ''">{{ c.pago | currency('Bs. ')}} <i v-if="c.pago > 0" class="fa fa-warning"></i></span></td>
-			  </tr>
-        <tr>
-          <td class="tg-031e" style="text-align:right;" colspan="4"><b>Subtotal</b></td>
-          <td class="tg-031e">{{ totalDebitos  | currency('Bs. ')}}</td>
-          <td class="tg-031e">{{ totalCreditos | currency('Bs. ')}}</td>
-        </tr>
-        <tr>
-          <td class="tg-031e" style="text-align:right;" colspan="4"><b>Total deuda</b></td>
-          <td class="tg-031e" colspan="2"><span :style="totalDeuda > 0 ? 'color: #f56954;' : ''">{{ totalDeuda  | currency('Bs. ')}}</span></td>
-        </tr>
-		</table>
+        <table class="table table-striped" style="width: 100%;">
+          <thead>
+            <tr>
+                <th>Cedula</th>
+                <th>Propietario</th>
+            </tr>
+            </thead>
+              <tbody>
+                <tr>
+                  <td>{{ propietario.cedula | currency('', 0)}}</td>
+                  <td>{{ propietario.apellidos }}, {{ propietario.nombres }}</td>
+                </tr>
+              </tbody>
+        </table>
+        <table class="table table-striped" style="width: 100%;">
+          <thead>
+                <th style="text-align: center">DETALLES DE LA CUENTA</th>
+              </thead>
+        </table>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Nª</th>
+              <th>FECHA</th>
+              <th>DETALLE DE MOVIMIENTO</th>
+              <th style="text-align: right;">DEBITOS</th>
+              <th style="text-align: right;">CREDITOS</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr v-for="(c, index) in cuentas">
+                <td>{{ index + 1 }}</td>
+              <td>{{ c.created_at | formatDate('DD/MM/YYYY') }}</td>
+               <td  v-if="c.tipo == 'D'">{{ c.tipo_ingreso.descripcion }} / {{ c.periodo.descripcion }} {{ c.anio }}</td>
+               <td  v-if="c.tipo == 'C'">
+                <template v-if="c.forma_pago_id == 1">
+                  Transferencia: {{ c.referencia}}/ 
+                </template>
+                <template v-else-if="c.forma_pago_id == 2">
+                  Deposito: {{ c.referencia}}/ 
+                </template>
+                <template v-else>
+                  Pago recibido en efectivo
+                </template>
+           </td>
+              <td style="text-align: right;"><span v-if="c.tipo == 'D'" class="red">{{ c.monto | currency('')}}</span></td>
+              <td style="text-align: right;"><span v-if="c.tipo == 'C'" style="color: #00a65a;">{{ c.monto | currency('')}}</span></td>
+              <td></td>
+              </tr>
+          </tbody>
+          <tfoot>
+            <tr style="border-bottom: 1px dotted #ccc;">
+              <td colspan="4" style="text-align: right;"><b>Total Debitos</b></td>
+              <td style="text-align: right;"><span class="red"><b>{{ totalDebitos  | currency('')}}</b></span></td>
+            </tr>
+            <tr>
+              <td colspan="4" style="text-align: right;"><b>Total Creditos</b></td>
+              <td style="text-align: right;"><span style="color: #00a65a;"><b>{{ totalCreditos | currency('') }}</b></span></td>
+            </tr>
+            <tr>
+              <td colspan="4" style="text-align: right;"><b>Saldo total</b></td>
+              <td style="text-align: right;"><span :style="totalMonto < 0 ? 'color: #f56954;' : 'color: #00a65a;'"><b>{{ totalMonto  | currency('')}}</b></span></td>
+            </tr>
+          </tfoot>
+        </table>
 	</div>
 
   </div>
-      <!-- this row will not appear when printing -->
+      
     </section>
     <!-- Modal para aplicar pagos -->
-    <div class="modal fade" id="nuevoPago" tabindex="-1" role="dialog" aria-labelledby="Nuevo" aria-hidden="true">
-  <form v-on:submit.prevent="pagar">
-  <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">×</span></button>
-          <h4 class="modal-title">Aplicar pago a la casa # {{ casa.numero }}</h4>
-        </div>
-        <div class="modal-body">
-            <div class="form-group">
+ <transition name="modal" v-if="showModal">
+      <div class="modal-mask">
+        <div class="modal-wrapper">
+          <div class="modal-container">
+
+            <div class="modal-header">
+                <h3>Registrar pago a la casa # {{ casa.numero }}</h3>
+              <button class="btn btn-xs pull-right btn-danger" style="margin-top: -60px; margin-right:-30px;" @click="showModal = false">
+                  x
+              </button>
+            </div>
+
+            <div class="modal-body">
+              <form v-on:submit.prevent="pagar">
+         <div class="form-group">
                   <label>Seleccione la forma de pago</label> 
                   <select class="form-control" v-model="nuevoPago.tipoPago">
                     <option value="1">Transferencia</option>
@@ -102,8 +149,8 @@
                   </select>
             </div>
             <div class="form-group" v-if="nuevoPago.tipoPago != 3">
-                <label>Selecciona la cuenta destino</label>
                 <select class="form-control" v-model="nuevoPago.cuenta">
+                <option disabled value="">-- Seleccion la cuenta destino ---</option>
                   <option v-for="cuenta in bancos" :value="cuenta.id">{{cuenta.banco.descripcion}} - 0{{ cuenta.numero }}</option>  
                 </select>
             </div>
@@ -113,49 +160,16 @@
               <input type="text" class="form-control" v-model="nuevoPago.ref">
             </div>
             <div class="form-group">
-              <label>Selecciona la cuota o cuotas a pagat</label>
-              <select class="form-control" v-model="selected_cuota">
-                <option :value="index" v-for="(p, index) in pendientes">
-                  {{ p.tipo_ingreso.descripcion }} / {{ p.periodo.descripcion }} {{ p.anio }} / {{ p.deuda | currency('Bs.') }}
-                </option>
-              </select>
-              <br>
-              <button class="btn btn-primary btn-xs" @click="addCuota">Añdir</button>
-            </div>
-            <div class="from-group" v-if="nuevoPago.cuotas.length > 0">
-                <table class="tg">
-                    <tr>
-                      <th>#</th>
-                      <th>Concepto</th>
-                      <th>Monto</th>
-                      <th></th>
-                    </tr>
-                    <tr v-for="(c, index) in nuevoPago.cuotas">
-                      <td>{{ index + 1}}</td>
-                      <td>{{ c.tipo_ingreso.descripcion }} / {{ c.periodo.descripcion }} {{ c.anio }}</td>
-                      <td>{{ c.deuda | currency('Bs. ') }}</td>
-                      <td><button @click="removeCuota(index)" class="btn btn-danger btn-xs"><i class="fa fa-minus"></i></button></td>
-                    </tr>
-                    <tr>
-                      <td colspan="2">Total a pagar</td>
-                      <td>{{ totalApagar | currency('Bs. ')}}</td>
-                    </tr>
-                </table>
-            </div>
-            <div class="form-group">
                 <label>Monto pagado</label>
                 <input type="text" required class="form-control" v-model="nuevoPago.monto">
             </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cerrar</button>
-          <button type="submit" class="btn btn-primary">Aplicar <i class="fa fa-save"></i></button>
+            <button class="btn btn-success pull-right" type="submit">Registrar pago  <i class="fa fa-check"></i></button>
+            </form>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-    </form>
-  </div>
-</div>
+    </transition>
 	</div>
 </template>
 <script>
@@ -163,24 +177,32 @@
  import auth from '../../services/auth';
  import Ruta from '../Ruta.vue';
  import moment from 'moment';
+ import modal from './modal.vue';
   export default {
     data () {
       return {
+        auth: auth,
         existe: true,
         casa: {},
-        propietario: {cedula: '', apellidos: '', nombres: '', fecnac: '', inquilino: false},
+        propietario: {cedula: '', apellidos: '', nombres: '', fecnac: '',  inquilino: false},
         conyuge: {},
         hijos: [],
         vehiculos: [],
         cuentas: [],
         totalDebitos: 0.00,
         totalCreditos: 0.00,
+        totalMonto: 0.00,
         auth:auth,
         loading: false,
-        pendientes: [],
         bancos: [],
         selected_cuota: null,
-        nuevoPago: {tipoPago: 3, cuenta: null, ref: null, cuotas: [], monto: 0.00}
+        anios: [],
+        anio: null,
+        nuevoPago: {tipoPago: 3, cuenta: '', ref: null, monto: null},
+        descargando: false,
+        cargando: false,
+        miCasa: null,
+        showModal: false
       }
     }, 
     mounted(){
@@ -190,11 +212,20 @@
         return router.push({path: '/'})
       }
 
+        if(this.auth.user.profile.rol == 3){
+            this.miCasa = this.auth.user.profile.casa;
+        }else{
+            this.miCasa = this.$route.params.casa;
+        }
+
       this.getCasa();
-      this.getEstCuenta();
-      this.getPendientes();
+      this.getAnios();
+      //this.getEstCuenta();
       this.getCuentas();
 
+    },
+    components:{
+      modal
     },
     computed: {
       totalDeuda: function(){
@@ -212,7 +243,7 @@
 
         for (var i = 0; i < this.nuevoPago.cuotas.length; i++) {
 
-          total = parseFloat(total) + parseFloat(cuotas[i].deuda);
+          total = parseFloat(total) + parseFloat(cuotas[i].monto);
               
         }
 
@@ -225,6 +256,9 @@
         if(from.params.casa !== to.params.casa){
           return this.getCasa();
         }
+      },
+      anio: function(){
+        this.getEstCuenta();
       }
     },
     methods: {
@@ -232,8 +266,10 @@
         this.loading = true;
         this.hijos = [];
         this.vehiculos = [];
-        this.$http.get('/api/casas/'+this.$route.params.casa).then(response => {
+
+        this.$http.get('/api/casas/'+this.miCasa).then(response => {
             var data = response.body[0];
+            //console.log(data);
             if(response.body.length == 0){
               this.existe = false;
                this.loading = false;
@@ -254,7 +290,6 @@
               this.propietario.apellidos = data.apellidos;
               this.propietario.nombres = data.nombres;
               this.propietario.fecnac = data.fecnac;
-              this.propietario.inquilino = data.inquilino;
               this.existe = true;
               this.loading = false;
             }
@@ -265,39 +300,36 @@
       },
       getEstCuenta: function(){
 
+        this.cargando = true;
         this.cuentas = [];
 
-        this.totalDebitos = 0.00;
+        this.totalMonto= 0.00;
+        this.totalDebitos= 0.00;
+        this.totalCreditos= 0.00;
 
-        this.totalCreditos = 0.00;
-
-      	 this.$http.get('/api/estcuenta/'+this.$route.params.casa).then(response => {
+      	 this.$http.get('/api/estcuenta/'+this.miCasa+'/'+this.anio).then(response => {
 
       	 		for (var i = 0; i < response.body.length; i++) {
       	 			
       	 			this.cuentas.push(response.body[i]);
 
-              this.totalDebitos = this.totalDebitos + response.body[i].deuda;
+              this.totalMonto = parseFloat(this.totalMonto) + parseFloat(this.cuentas[i].monto);
 
-              if(response.body[i].confirmado){
-              
-              this.totalCreditos = this.totalCreditos + response.body[i].pago;
-
+              if(this.cuentas[i].tipo == 'D'){
+                  this.totalDebitos = parseFloat(this.totalDebitos) + parseFloat(this.cuentas[i].monto);
               }
+
+              if(this.cuentas[i].tipo == 'C'){
+                 this.totalCreditos = parseFloat(this.totalCreditos) + parseFloat(this.cuentas[i].monto); 
+              }
+
       	 		};
+          this.cargando = false;
 
-      	 })
-      },
-      getPendientes: function(){
-
-        this.$http.get('/api/ingresos/pagosPendientes/' + this.$route.params.casa).then(response => {
-            
-            for (var i = 0; i < response.body.length; i++) {
-
-              this.pendientes.push(response.body[i]);
-
-            }
-        });
+      	 }, response => {
+            this.$swal("Ocurrio un error al cargar el estado de cuenta!");
+            this.cargando = false;
+         })
       },
       getCuentas: function(){
 
@@ -310,32 +342,61 @@
 
         })
       },
-      addCuota: function(){
+      getAnios: function(){
 
-            this.nuevoPago.cuotas.push(this.pendientes[this.selected_cuota]);
-            this.pendientes.splice(this.selected_cuota, 1);
-      },
-      removeCuota: function(index){
+          this.$http.get('/api/aniofiscal').then(response => {
+            for (var i = 0; i < response.body.length; i++) {
+                this.anios.push(response.body[i]) 
+              } 
 
-          this.pendientes.push(this.nuevoPago.cuotas[index]);
-          this.nuevoPago.cuotas.splice(index, 1);
+              this.anio = this.anios[0].aniofiscal;
+          })
       },
       pagar: function(){
 
-          this.$http.post('/api/pagar', {pagos: this.nuevoPago, casa_id: this.casa_id }).then(response => {
+        if(this.anio == 0){
+          var anio = this.anios[0].aniofiscal;
+        }else{
+          var anio = this.anio;
+        }
+
+        var r = confirm("Estas seguro de registrar este pago?");
+
+
+        if(r){
+          this.$http.post('/api/pagar', {pagos: this.nuevoPago, casa_id: this.casa.id, anio: anio }).then(response => {
 
              if(response.body.save){
 
-                   this.nuevoPago = {tipoPago: 3, cuenta: null, ref: null, cuotas: [], monto: 0.00}
+                   this.nuevoPago = {tipoPago: 3, cuenta: null, ref: null, cuotas: [], monto: ''}
 
-                   this.getPendientes();
-
+                   //this.getPendientes();
+                   this.showModal = false;
+                   this.$swal({
+                    title: "Exito!",
+                    text: 'El pago se registró con exito!',
+                    type: 'success'
+                   })
                    this.getEstCuenta();
 
              }
-
           })
-      }
+          }
+      },
+      getPdf: function(){
+
+        this.descargando = true;
+          this.$http.post('/api/pdf', {casa_id: this.casa.id, anio: this.anio, propietario: this.propietario, numero: this.casa.numero}, {responseType: 'arraybuffer'}).then(function(response){
+              var headers = response.headers;
+              var blob = new Blob([response.data], {type: headers['content-type']});
+              var link = document.createElement('a');
+              link.href = window.URL.createObjectURL(blob);
+              console.log(link);
+              link.download = "EstadoDeCuenta"+this.casa.numero+"_"+this.anio+".pdf";
+              link.click();
+              this.descargando = false;
+          });
+        }
     },
     components: {
       Ruta
@@ -351,4 +412,62 @@
 .tg .tg-ipa1{font-weight:bold;background-color:#c0c0c0;text-align:center}
 .red {color: #f56954;},
 .green {color: #00a65a;}
+ .modal-mask {
+  position: fixed;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .5);
+  display: table;
+  transition: opacity .3s ease;
+}
+
+.modal-wrapper {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.modal-container {
+  width: 500px;
+  margin: 0px auto;
+  padding: 20px 30px;
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+  transition: all .3s ease;
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+.modal-header h3 {
+  margin-top: 0;
+  color: #42b983;
+}
+
+.modal-body {
+  margin: 20px 0;
+}
+
+.modal-default-button {
+  float: right;
+}
+
+.modal-enter {
+  opacity: 0;
+}
+
+.modal-leave-active {
+  opacity: 0;
+}
+
+.modal-enter .modal-container,
+.modal-leave-active .modal-container {
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
+}
+
+.cerrar{
+    position: absolute;
+  }
 </style>

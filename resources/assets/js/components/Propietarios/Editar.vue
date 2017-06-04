@@ -385,11 +385,20 @@ export default {
 										casa: this.casa}).then(response => {
 									   		console.log(response);
 									   		if(!response.body.save){
+                          this.$swal({
+                            title: 'Ocurrio un error!',
+                            text: response.body.msj,
+                            type: 'error'
+                          })
 									   			alert(response.body.msj);
 									   		}else{
-									   			alert(response.body.msj);
-                          						this.saving = false;
-                          						 router.push({path: '/propietarios'});  
+									   			this.$swal({
+                            title: 'Listo!',
+                            text: response.body.msj,
+                            type: 'success'
+                          })
+                          	this.saving = false;
+                            router.push({path: '/propietarios'});  
                         }
 									   		
 									   }, response => {
