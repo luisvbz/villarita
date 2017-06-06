@@ -52,6 +52,8 @@ export default {
             context.showModal = false
         }, response => {
             context.error = true
+            context.showModal = false
+            context.errorUser()
         })
     },
     signout() {

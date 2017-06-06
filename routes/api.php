@@ -31,6 +31,9 @@ Route::post('/register', 'LoginController@register');
         Route::get('/casas/{id}', 'CensoController@getCasa');
         Route::put('/casas/{id}', 'CensoController@updateCasa');
 
+        Route::get('/propietarios/pagos', 'CensoController@getPagos');
+        Route::post('/propietarios/pagos', 'CensoController@registrarPago');
+
         //Buscar personas cne
         Route::get('/cne/{nac}/{cedula}', 'CensoController@buscarCne');
         //
@@ -75,6 +78,8 @@ Route::post('/register', 'LoginController@register');
                 Route::get('/', 'IngresosController@getIngresos');
                 Route::post('/generarCobro', 'IngresosController@generarCobro');
                 Route::get('/pagosPendientes/{casa_id}', 'IngresosController@PagoPendientes');
+                Route::get('/pagos', 'IngresosController@getPagos');
+                Route::post('/pagos', 'IngresosController@procesarPago');
          });
 
          Route::group(['prefix' => 'reporte'], function () {

@@ -26,13 +26,12 @@
             </a>
             <ul class="dropdown-menu">
               <!-- User image -->
-              <li class="user-header">
+              <li class="user-header" style="background-color: #B8B8B8;">
               <div class="img-circle icono">
                   {{ inicial }}
               </div>
                 <p>
-                  {{ auth.user.profile.name }}
-                  <small>Administrador</small>
+                  <b>{{ auth.user.profile.name }}</b>
                 </p>
               </li>
               <!-- Menu Footer-->
@@ -57,21 +56,17 @@
             </a>
             <ul class="dropdown-menu">
               <!-- User image -->
-              <li class="user-header">
+              <li class="user-header" style="background-color: #B8B8B8;">
               <br><br>
                 <form autocomplete="off" v-on:submit="signin">
                   <div class="form-group has-feedback">
                     <input type="text" id="email" class="form-control" placeholder="usuario" v-model="username" required>
-                    <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                    <span class="glyphicon glyphicon-user form-control-feedback"></span>
                   </div>
                   <div class="form-group has-feedback">
-                    <input type="password" id="password" class="form-control" v-model="password" placeholder="Contrasela" required>
+                    <input type="password" id="password" v-on:keydown.enter="signin" class="form-control" v-model="password" placeholder="Contrasela" required>
                     <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                   </div>
-                  <div class="alert alert-danger" v-if="error">
-            <p>Ocurrio un error.</p>
-        </div>
-                
               </li>
               <!-- Menu Footer-->
               <li class="user-footer">
@@ -125,8 +120,10 @@
         <li :class="$route.path == '/' ? 'active': ''"><router-link to="/"><i class="fa fa-home"></i> <span>Inicio</span></router-link></li>
         <li v-if="rol_administrador || rol_informatica" :class="$route.path == '/propietarios' ? 'active': ''"><router-link to="/propietarios"><i class="fa fa-group"></i> <span>Propietarios</span></router-link></li>
         <li v-if="rol_propietario" :class="$route.path == '/estadodecuenta' ? 'active': ''"><router-link to="/estadodecuenta"><i class="fa fa-money"></i> <span>Mi estado de cuenta</span></router-link></li>
+        <li v-if="rol_propietario" :class="$route.path == '/pagos' ? 'active': ''"><router-link to="/pagos"><i class="fa fa-dollar"></i> <span>Mis pagos</span></router-link></li>
         <li :class="$route.path == '/mantenimiento' ? 'active': ''" v-if="rol_administrador || rol_informatica"><router-link to="/mantenimiento"><i class="fa fa-dashboard"></i> <span>Mantenimiento</span></router-link></li>
         <li :class="$route.path == '/administracion' ? 'active': ''" v-if="rol_administrador || rol_informatica"><router-link to="/administracion"><i class="fa fa-tasks"></i> <span>Administracion</span></router-link></li>
+        <li><a href="/reglamento.pdf"><i class="fa fa-file"></i> <span>Reglamento</span></a></li>
       </ul>
     </section>
     <!-- /.sidebar -->
@@ -148,7 +145,7 @@
     <h3 slot="header"></h3>
     <div slot="body">
       <center><i class="fa fa-spinner fa-spin" style="color: #00a65a; font-size:80px;"></i>
-      <h4>Entrando por favor espere...</h4>
+      <h4>Entrando, por favor espere...</h4>
     </div></center> 
 </load>
  </div>
@@ -224,6 +221,13 @@
                 router.push({name: 'propietarios.id', params: {id: this.buscar} });
 
                 this.buscar = '';
+            },
+            errorUser: function(){
+                this.$swal({
+                title:'Error!',
+                text: 'Usuario y/o contraseña incorrectos',
+                type: 'error'
+              })
             }
         },
         components: {

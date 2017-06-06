@@ -9,7 +9,7 @@
                 default header
               </slot>
               <button class="btn btn-xs pull-right btn-danger" style="margin-top: -60px; margin-right:-30px;" @click="$emit('close')">
-                  x
+                  <i class="fa fa-times"></i>
               </button>
             </div>
 

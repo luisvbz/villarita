@@ -9,7 +9,9 @@ const router = new VueRouter({
     saveScrollPosition: true,
     routes: [
     	{path:'/', component: require('./components/Webpage.vue')},
+        //{path:'/reglamento', component: require('./components/Reglamento.vue')},
         {path: '/estadodecuenta', name: 'mi.estadocuenta', component: require('./components/Propietarios/EstadoCuenta.vue')},
+        {path: '/pagos', name: 'mis.pagos', component: require('./components/Propietarios/Pagos.vue')},
     	//{path:'/login', component: require('./components/Login.vue')},
         {path:'/propietarios', component: require('./components/Propietarios/Index.vue')},
         {path:'/propietarios/nuevo', component: require('./components/Propietarios/New.vue')},
@@ -28,11 +30,16 @@ const router = new VueRouter({
         { path: '/administracion', name: 'admin', component: require('./components/Administracion/Index.vue'),
             children: [
                 {path: 'ingresos', name: 'admin.ingresos', component: require('./components/Administracion/Ingresos/Index.vue')},
-                {path: 'conban', name: 'admin.conban', component: require('./components/Administracion/Ingresos/Consolidacion.vue')},
-                {path: 'estadodecuenta/:casa', name: 'admin.estcuenta', component: require('./components/Propietarios/EstadoCuenta.vue')}
+                {path: 'confirmarpagos', name: 'admin.conf', component: require('./components/Administracion/Ingresos/Pendientes.vue')},
+                {path: 'estadodecuenta/:casa', name: 'admin.estcuenta', component: require('./components/Propietarios/EstadoCuenta.vue')},
+                {path: 'conban', name: 'admin.conban', component: require('./components/Administracion/Ingresos/Consolidacion.vue'),
+                    children:[
+                        {path: 'detalles/:banco', name: 'detalles.conban', component: require('./components/Administracion/Ingresos/DetallesCon.vue')}  
+                    ]
+                },
                 //{path: 'ingresos', name: 'admin.ingresos', component: require('./components/Administracion/Ingresos/Index.vue')}
             ]},
-        { path: '*', redirect: '/'}
+        { path: '*', redirect: '/'},
     ]
 })
 

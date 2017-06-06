@@ -83,7 +83,7 @@ class MantenimientoController extends Controller
 
         $mesPeriodo = substr($periodo[0], 1,3);
 
-        if($anio > date('Y') && $mesPeriodo > date('m')){
+        if($anio == date('Y') && $mesPeriodo > date('m')){
 
             return response()->json(['save' => false, 'msj' => 'No puedes crear periodos posteriores al mes actual']);
         }

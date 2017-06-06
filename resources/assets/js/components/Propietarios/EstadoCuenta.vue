@@ -163,7 +163,8 @@
                 <label>Monto pagado</label>
                 <input type="text" required class="form-control" v-model="nuevoPago.monto">
             </div>
-            <button class="btn btn-success pull-right" type="submit">Registrar pago  <i class="fa fa-check"></i></button>
+            <button class="btn btn-success pull-right" v-if="!registrando" type="submit">Registrar pago  <i class="fa fa-check"></i></button>
+            <button class="btn btn-success pull-right" v-else disabled>Registrando  <i class="fa fa-spinner fa-spin"></i></button>
             </form>
             </div>
           </div>
@@ -202,7 +203,8 @@
         descargando: false,
         cargando: false,
         miCasa: null,
-        showModal: false
+        showModal: false,
+        registrando: false
       }
     }, 
     mounted(){
@@ -360,10 +362,15 @@
           var anio = this.anio;
         }
 
+        if(this.nuevoPago.tipoPago == 3){
+            this.nuevoPago.cuenta = 1;
+        }
+
         var r = confirm("Estas seguro de registrar este pago?");
 
 
         if(r){
+          this.registrando = true
           this.$http.post('/api/pagar', {pagos: this.nuevoPago, casa_id: this.casa.id, anio: anio }).then(response => {
 
              if(response.body.save){
@@ -371,7 +378,8 @@
                    this.nuevoPago = {tipoPago: 3, cuenta: null, ref: null, cuotas: [], monto: ''}
 
                    //this.getPendientes();
-                   this.showModal = false;
+                   this.showModal = false
+                   this.registrando = false
                    this.$swal({
                     title: "Exito!",
                     text: 'El pago se registró con exito!',

@@ -14,12 +14,15 @@
                 <i class="fa fa-dollar"><i class="fa fa-long-arrow-up"></i></i> Pagos
                </router-link>
                <router-link to="/administracion/conban"  class="btn btn-app">
-                <i class="fa fa-money"></i></i> Consolidacion <br> Bancaria
+                <i class="fa fa-money"></i></i> Con. Bancaria
                </router-link>
-               <router-link to="/administracion/conban"  class="btn btn-app">
+               <router-link to="/administracion/confirmarpagos"  class="btn btn-app">
+                <i class="fa fa-money"></i></i> Confirmar pagos
+               </router-link>
+               <router-link to="/"  class="btn btn-app">
                 <i class="fa fa-table"></i></i> Bienes
                </router-link>
-               <router-link to="/administracion/conban"  class="btn btn-app">
+               <router-link to="/"  class="btn btn-app">
                 <i class="fa fa-file"></i></i> Reportes
                </router-link>
             </div>

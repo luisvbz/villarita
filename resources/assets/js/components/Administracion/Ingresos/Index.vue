@@ -258,13 +258,13 @@
 
           }
 
-            this.loading = true; 
-            this.generando = true;
+            this.loading = true;
             this.$http.post('/api/ingresos/generarCobro', {cobro: this.cobro}).then(response => {
 
                   if(response.body.save && response.body.casas.length == 0){
 
                       this.showModal = false;
+                       this.generando = true;
                       this.$swal(response.body.msj);
 
                        this.$swal({title:'Exitoso!', text: response.body.msj, type: 'success'});
@@ -274,7 +274,7 @@
                   }else if(response.body.save && response.body.casas.length > 0){
 
                       this.showModal = false;
-
+                      this.generando = true;
                       this.$swal({title:'Error', text: 'Los cobros se generaron, excepto para las casas '+ response.body.casas + ', Ya tenian esta cuota registrada', type: 'success'});
 
 
@@ -283,6 +283,7 @@
                   }else if(!response.body.save && response.body.casas.length > 0){
 
                       this.showModal = false;
+                      this.generando = true;
                       this.$swal({title:'Error', text: 'Ya este cobro se realizo anteriormente para todas las casas', type: 'error'});
 
                       return this.getCasas();

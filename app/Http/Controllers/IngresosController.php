@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Ingreso;
 use App\Casa;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use DB;
+use App\Pago;
+use App\Cuenta;
 
 class IngresosController extends Controller
 {
@@ -46,6 +49,8 @@ class IngresosController extends Controller
     	$cobro = $request->input('cobro');
         $casas = array();
 
+        $user = JWTAuth::parseToken()->authenticate();
+
         $totalCobros = Ingreso::all()->count();
 
     	foreach ($cobro['casas'] as $key => $value) {
@@ -54,7 +59,9 @@ class IngresosController extends Controller
                                   ->where('anio', $cobro['anio'])
                                   ->where('casa_id', $value)
                                   ->where('tipo_ingreso_id', $cobro['tipo_ingreso'])
+                                  ->where('tipo', 'D')
                                   ->get();
+            //return $verificar;
 
             if(count($verificar) > 0){
                 $casa = Casa::find($value);
@@ -70,6 +77,7 @@ class IngresosController extends Controller
                 $new->anio = $cobro['anio'];
                 $new->codperi = $cobro['codperi'];
                 $new->monto = -$cobro['monto'];
+                $new->user_id = $user->id;
                 $new->save();    
             }
     		
@@ -105,4 +113,50 @@ class IngresosController extends Controller
     public function consolidacion(){
         
     }
+
+    public function getPagos(){
+
+
+        $pagos = Pago::with('cuenta','formapago')->orderBy('created_at', 'DESC')->paginate(12);
+
+        $porConfirmar = Pago::where('confirmado',0)->count(); 
+
+        return response()->json(array('pagos' => $pagos, 'cuantos' => $porConfirmar));
+    }
+
+     public function procesarPago(Request $request)
+    {
+        $id_pago = $request->input('id');
+
+        $p = Pago::find($id_pago);
+        $p->confirmado = true;
+        $p->save();
+
+            $pago = new Ingreso;
+            $pago->casa_id = $p->casa_id;
+            $pago->forma_pago_id = $p->forma_pago_id;
+            $pago->cuenta_id = $p->cuenta->id;
+            $pago->referencia = $p->referencia;
+            $pago->fecha_pago = $p->fecha_pago;
+            $pago->monto = $p->monto;
+            $pago->tipo = 'C';
+            $pago->tipo_ingreso_id = $p->forma_pago_id;
+            $pago->anio = $p->anio;
+            $pago->codperi = $p->codperi;
+            $pago->user_id = $p->user_id;
+            $psave = $pago->save();
+
+            //return $pagos['tipoPago'];
+            if($psave == true){
+
+                $cuenta = Cuenta::find($p->cuenta->id);
+                $cuenta->disponible = $cuenta->disponible + $p->monto;
+                $cuenta->save();
+            }
+
+
+        return response()->json(array('save' => true));
+    }
+
+
 }

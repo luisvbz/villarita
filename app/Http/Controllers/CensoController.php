@@ -14,9 +14,11 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 use PDF;
 use App\Cuenta;
 use App\Cne;
+use App\Pago;
 
 class CensoController extends Controller
 {
+    
     public function getAll()
     {
 
@@ -47,12 +49,54 @@ class CensoController extends Controller
         return $estCuenta->toJson();
     }
 
+    public function getPagos(){
+
+        $user = JWTAuth::parseToken()->authenticate();
+
+        $pagos = Pago::with('cuenta','formapago')->where('user_id', $user->id)->orderBy('created_at', 'DESC')->paginate(12);
+
+        return $pagos->toJson();
+    }
+
+    public function registrarPago(Request $request){
+
+            $user = JWTAuth::parseToken()->authenticate();
+            $data = $request->input('data');
+            $casa = Casa::where('numero', $user->casa)->get();
+
+            $pago = new Pago;
+            $pago->casa_id = $casa[0]->id;
+            $pago->codperi = '0'.date('m');
+            $pago->anio = date('Y');
+            $pago->monto = $data['monto'];
+            $pago->forma_pago_id = $data['tipoPago'];
+            $pago->cuenta_id = $data['cuenta'];
+            $pago->referencia = $data['referencia'];
+            $pago->user_id = $user->id;
+            $pago->fecha_pago = $data['fecha'];
+            $pago->confirmado = false;
+            $pago->rechazado = false;
+            
+            try {
+
+                $pago->save();
+
+                $miPago = Pago::find($pago->id)->with('cuenta');
+                return response()->json(array('save' => true, 'pago' => $pago)); 
+
+            } catch (Exception $e) {
+
+                return response()->json(array('save' => false, 'pago' => ''));    
+            }
+
+    }
+
     public function pagarDeuda(Request $request)
     {
         $pagos = $request->input('pagos');
 
        // return $request->all();
-
+        $user = JWTAuth::parseToken()->authenticate();
             $pago = new Ingreso;
             $pago->casa_id = $request->input('casa_id');
             $pago->forma_pago_id = $pagos['tipoPago'];
@@ -62,13 +106,13 @@ class CensoController extends Controller
             $pago->monto = $pagos['monto'];
             $pago->tipo = 'C';
             $pago->tipo_ingreso_id = $pagos['tipoPago'];
-            $pago->confirmado = true;
             $pago->anio = $request->input('anio');;
             $pago->codperi = '0'.date('m');
+            $pago->user_id = $user->id;
             $psave = $pago->save();
 
             //return $pagos['tipoPago'];
-            if($psave == true && $pagos['tipoPago'] != 3){
+            if($psave == true){
 
                 $cuenta = Cuenta::find($pagos['cuenta']);
                 $cuenta->disponible = $cuenta->disponible + $pagos['monto'];
