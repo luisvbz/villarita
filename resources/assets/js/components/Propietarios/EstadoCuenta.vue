@@ -139,7 +139,7 @@
             </div>
 
             <div class="modal-body">
-              <form v-on:submit.prevent="pagar">
+              <form v-on:submit.prevent="prePagar">
          <div class="form-group">
                   <label>Seleccione la forma de pago</label> 
                   <select class="form-control" v-model="nuevoPago.tipoPago">
@@ -164,8 +164,31 @@
                 <input type="text" required class="form-control" v-model="nuevoPago.monto">
             </div>
             <button class="btn btn-success pull-right" v-if="!registrando" type="submit">Registrar pago  <i class="fa fa-check"></i></button>
-            <button class="btn btn-success pull-right" v-else disabled>Registrando  <i class="fa fa-spinner fa-spin"></i></button>
             </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
+    <transition name="dialog" v-if="confirmacion">
+      <div class="dialog-mask">
+        <div class="dialog-wrapper">
+          <div class="dialog-container">
+
+            <div class="dialog-header">
+                <h3>Confirmación</h3>
+              <button class="btn btn-xs pull-right btn-danger" style="margin-top: -60px; margin-right:-30px;" @click="confirmacion = false">
+                  x
+              </button>
+            </div>
+
+            <div class="dialog-body">
+             <p>Esta seguro que desea aplicar el pago por {{ nuevoPago.monto | currency('Bs.') }} a las casa <b>{{ casa.numero}}</b></p>
+            </div>
+            <div class="modal-footer">
+              <button  class="btn btn-danger pull-left" @click="confirmacion = false">Cancelar</button>
+              <button  class="btn btn-success pull-right"@click="pagar" v-if="!registrando">Aceptar  <i class="fa fa-check"></i></button>
+              <button class="btn btn-success pull-right" v-else disabled>Registrando  <i class="fa fa-spinner fa-spin"></i></button>
             </div>
           </div>
         </div>
@@ -204,7 +227,8 @@
         cargando: false,
         miCasa: null,
         showModal: false,
-        registrando: false
+        registrando: false,
+        confirmacion: false
       }
     }, 
     mounted(){
@@ -270,7 +294,7 @@
         this.vehiculos = [];
 
         this.$http.get('/api/casas/'+this.miCasa).then(response => {
-            var data = response.body[0];
+            var data = response.body.propietario[0];
             //console.log(data);
             if(response.body.length == 0){
               this.existe = false;
@@ -335,7 +359,7 @@
       },
       getCuentas: function(){
 
-        this.$http.get('/api/cuentas').then(response => {
+        this.$http.get('/api/cuentas2').then(response => {
 
           for (var i = 0; i < response.body.length; i++) {
             this.bancos.push(response.body[i]) 
@@ -354,6 +378,10 @@
               this.anio = this.anios[0].aniofiscal;
           })
       },
+      prePagar: function(){
+
+        this.confirmacion = true;
+      },
       pagar: function(){
 
         if(this.anio == 0){
@@ -366,10 +394,6 @@
             this.nuevoPago.cuenta = 1;
         }
 
-        var r = confirm("Estas seguro de registrar este pago?");
-
-
-        if(r){
           this.registrando = true
           this.$http.post('/api/pagar', {pagos: this.nuevoPago, casa_id: this.casa.id, anio: anio }).then(response => {
 
@@ -378,6 +402,7 @@
                    this.nuevoPago = {tipoPago: 3, cuenta: null, ref: null, cuotas: [], monto: ''}
 
                    //this.getPendientes();
+                   this.confirmacion = false
                    this.showModal = false
                    this.registrando = false
                    this.$swal({
@@ -389,7 +414,6 @@
 
              }
           })
-          }
       },
       getPdf: function(){
 
@@ -398,10 +422,11 @@
               var headers = response.headers;
               var blob = new Blob([response.data], {type: headers['content-type']});
               var link = document.createElement('a');
+              document.body.appendChild(link);
               link.href = window.URL.createObjectURL(blob);
-              console.log(link);
               link.download = "EstadoDeCuenta"+this.casa.numero+"_"+this.anio+".pdf";
               link.click();
+              document.body.removeChild(link);
               this.descargando = false;
           });
         }
@@ -471,6 +496,62 @@
 
 .modal-enter .modal-container,
 .modal-leave-active .modal-container {
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
+}
+
+/*Dialogo*/
+.dialog-mask {
+  position: fixed;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .5);
+  display: table;
+  transition: opacity .3s ease;
+}
+
+.dialog-wrapper {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.dialog-container {
+  width: 500px;
+  margin: 0px auto;
+  padding: 20px 30px;
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+  transition: all .3s ease;
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+.dialog-header h3 {
+  margin-top: 0;
+  color: #42b983;
+}
+
+.dialog-body {
+  margin: 20px 0;
+}
+
+.dialog-default-button {
+  float: right;
+}
+
+.dialog-enter {
+  opacity: 0;
+}
+
+.dialog-leave-active {
+  opacity: 0;
+}
+
+.dialog-enter .dialog-container,
+.dialog-leave-active .dialog-container {
   -webkit-transform: scale(1.1);
   transform: scale(1.1);
 }

@@ -141,20 +141,16 @@
     </section>
     <!-- /.content -->
   </div>
-  <load v-if="showModal" @close="showModal = false">
-    <h3 slot="header"></h3>
-    <div slot="body">
-      <center><i class="fa fa-spinner fa-spin" style="color: #00a65a; font-size:80px;"></i>
-      <h4>Entrando, por favor espere...</h4>
-    </div></center> 
-</load>
+  <loading v-if="showModal">
+    <h4 slot="mensaje">Entrando, por favor espere ...</h4>  
+  </loading>
  </div>
 </template>
 <script>
   import auth from '../services/auth';
   import Ruta from './Ruta.vue';
   import router from '../routes';
-  import load from '../components/load.vue';
+  import loading from '../components/loading.vue';
   export default {
     data() {
             return {
@@ -232,7 +228,7 @@
         },
         components: {
           Ruta,
-          load
+          loading
         }
       }
 </script>

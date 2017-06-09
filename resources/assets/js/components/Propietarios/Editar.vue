@@ -308,8 +308,8 @@ export default {
         this.hijos = [];
         this.vehiculos = [];
         this.$http.get('/api/casas/'+this.$route.params.id).then(response => {
-            var data = response.body[0];
-            if(response.body.length == 0){
+            var data = response.body.propietario[0];
+            if(response.body.propietario.length == 0){
               this.existe = false;
             }else{
               this.casa = data.casa;
@@ -375,7 +375,7 @@ export default {
 		},
 		savePropietario: function(){
 			this.saving = true;
-			this.$http.put('/api/casas/'+this.$route.params.id, {hasConyuge: this.hasConyuge, 
+			this.$http.post('/api/casas/edit/'+this.$route.params.id, {hasConyuge: this.hasConyuge, 
 									   hasHijos: this.hasHijos,
 									   hasVehiculos: this.hasVehiculos,
 									   propietario: this.propietario, 

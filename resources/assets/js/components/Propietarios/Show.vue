@@ -2,7 +2,7 @@
 	<div class="row">
 		 <div class="col-md-12">
         <div class="alert alert-danger" v-if="!existe">
-                <h4><i class="icon fa fa-ban"></i> Error!</h4>
+                <h4><i class="fa fa-ban"></i> Error!</h4>
                 <h5>La casa # {{ $route.params.id }} no esta registrada!</h5>
         </div>
           <section class="invoice" v-else>
@@ -12,10 +12,13 @@
         <div class="col-xs-12">
           <h2 class="page-header">
             <i class="fa fa-home"></i> Casa # {{ casa.numero }}
+            <span class="pull-right">
+             Bs. <span :style="saldo < 0 ? 'color: #f56954;' : 'color: #00a65a;'">{{ saldo | currency('') }}</span>
+            </span>
           </h2>
             <div class="pull-right">
-              <router-link :to="{name: 'propietarios.editar', params: {id: casa.numero}}" class="btn btn-xs btn-success">Editar <i class="fa fa-edit"></i></router-link>&nbsp;
-            <button class="btn btn-xs btn-danger">Imprimir <i class="fa fa-pdf"></i></button>
+              <router-link :to="{name: 'propietarios.editar', params: {id: casa.numero}}" class="btn btn-xs btn-primary">Editar <i class="fa fa-edit"></i></router-link>&nbsp;
+             <router-link :to="{name: 'propietarios.estadocuenta', params: {casa: casa.numero}}" class="btn btn-xs btn-success">Ver estado de cuenta <i class="fa fa-edit"></i></router-link>&nbsp;
             </div>
           
         </div>
@@ -44,7 +47,7 @@
             <strong>Fech. Nac.: </strong>{{ conyuge.fecnac |formatDate('DD/MM/YYYY') }}<br>
         </div>
         <div class="col-sm-4 invoice-col">
-        <router-link :to="{name: 'propietarios.estadocuenta', params: {casa: casa.numero}}" class="btn btn-success">Estado de cuenta <i class="fa fa-list"></i></router-link>
+       <!-- <router-link :to="{name: 'propietarios.estadocuenta', params: {casa: casa.numero}}" class="btn btn-success">Estado de cuenta <i class="fa fa-list"></i></router-link>-->
         </div>
         <!-- /.col -->
       </div>
@@ -107,23 +110,10 @@
       </div>
         </div>
       </div>
-      
-
-      <!-- this row will not appear when printing -->
-      <div class="row no-print">
-       <!-- <div class="col-xs-12">
-          <a href="invoice-print.html" target="_blank" class="btn btn-default"><i class="fa fa-print"></i> Print</a>
-          <button type="button" class="btn btn-success pull-right"><i class="fa fa-credit-card"></i> Submit Payment
-          </button>
-          <button type="button" class="btn btn-primary pull-right" style="margin-right: 5px;">
-            <i class="fa fa-download"></i> Generate PDF
-          </button>
-        </div>-->
-      </div>
     </section>
-    <div class="overlay" v-if="loading">
-              <i class="fa fa-refresh fa-spin"></i>
-           </div>
+    <loading v-if="loading">
+    <h4 slot="mensaje">Cargando informacion...</h4>  
+  </loading>
 
 		</div>
 	</div>
@@ -132,6 +122,7 @@
  import router from '../../routes';
  import auth from '../../services/auth';
  import Ruta from '../Ruta.vue';
+ import loading from '../loading.vue';
   export default {
     data () {
       return {
@@ -142,6 +133,7 @@
         hijos: [],
         vehiculos: [],
         auth:auth,
+        saldo: 0,
         loading: false,
       }
     }, 
@@ -165,14 +157,18 @@
     methods: {
       getCasa: function(){
         this.loading = true;
+        this.existe = false;
         this.hijos = [];
         this.vehiculos = [];
         this.$http.get('/api/casas/'+this.$route.params.id).then(response => {
-            var data = response.body[0];
-            if(response.body.length == 0){
+            var data = response.body.propietario[0];
+            //console.log(data.casa)
+            var saldo = response.body.saldo;
+            if(response.body.propietario.length == 0){
               this.existe = false;
                this.loading = false;
             }else{
+              this.existe = true;
               this.casa = data.casa;
               this.conyuge = data.conyuge;
 
@@ -183,7 +179,6 @@
               for (var i = 0; i < data.vehiculos.length; i++) {
                 this.vehiculos.push(data.vehiculos[i]);
               };
-            
               //data propietario
               this.propietario.cedula = data.cedula;
               this.propietario.apellidos = data.apellidos;
@@ -191,16 +186,19 @@
               this.propietario.fecnac = data.fecnac;
               this.propietario.inquilino = data.inquilino;
               this.existe = true;
+              this.saldo = saldo;
               this.loading = false;
             }
 
         }, response => {
             //console.log(error);
+            this.loading = false;
         })
       }
     },
     components: {
-      Ruta
+      Ruta,
+      loading
     }
   }
 </script>
@@ -220,4 +218,6 @@
   .cap {
     text-transform: capitalize;
   }
+ .red {color: #f56954;},
+ .verde {color: #00a65a;}
 </style>

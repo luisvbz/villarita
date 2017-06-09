@@ -5,17 +5,18 @@
       
       <form class="form-horizontal" v-on:submit.prevent="confirmacion">
           <div class="col-xs-3">
-              <select class="form-control"  v-model="cobro.tipo_ingreso" id="tipocobro">
+              <select class="form-control"  v-model="cobro.tipo_ingreso" id="tipocobro" required>
                 <option v-for="t in tipoingresos" :value="t.id">{{ t.descripcion }}</option>
               </select>
           </div>
           <div class="col-xs-2">
-              <select class="form-control" v-model="anio">
+              <select class="form-control" v-model="anio" required>
                 <option v-for="a in anios" :value="a.aniofiscal">{{ a.aniofiscal }}</option>
               </select>
           </div>
           <div class="col-xs-2">
-              <select class="form-control" v-model="cobro.codperi" id="periodo">
+              <select class="form-control" v-model="cobro.codperi" id="periodo" required>
+                <option disabled value="">---</option>
                 <option v-for="p in periodos" :value="p.cod">{{ p.descripcion }}</option>
               </select>
           </div>
@@ -79,8 +80,16 @@
     <h3 slot="header">Generacion de cobro</h3>
     <div slot="body">
         <h3>{{ mensaje_cobro }}{{ this.cobro.monto | currency('Bs.') }}</h3>
+        <hr>
+        <div class="form-group">
+          <input type="checkbox" name="sms" id="sms" v-model="sms">
+          <label for="sms">Notificar a los propietarios por mensaje de texto</label><br>
+          <h5>Saldo disponible para sms: {{ this.CuentaSms.saldo | currency('Bs.')}}</h5>
+          <h4>Sms aproximados: {{ this.CuentaSms.mensajes }}</h4>
+        </div>
     </div>
-    <button slot="footer" class="btn btn-success pull-right" @click="generarCobro">Aceptar  <i class="fa fa-check"></i></button>
+    <button slot="footer" class="btn btn-success pull-right" v-if="!saving" @click="generarCobro">Aceptar  <i class="fa fa-check"></i></button>
+    <button slot="footer" class="btn btn-success pull-right" v-else disabled>Procesando ...<i class="fa fa-spinner"></i></button>
 </modal>
   </div>
 </template>
@@ -98,6 +107,7 @@
         tipoingresos: [],
         anio: '2017',
         loading: false,
+        saving: false,
         generando: false,
         viewForm: false,
         auth:auth,
@@ -105,7 +115,9 @@
         allSelected: false,
         bsqnum: {data: null, tipo: 1},
         showModal: false,
-        mensaje_cobro: null
+        mensaje_cobro: null,
+        sms: false,
+        cuentaSms: {saldo: 0, mensajes: 0}
       }
     }, 
     mounted(){
@@ -122,6 +134,7 @@
      this.getAnios(this.anio);
      this.getTiposIngresos();
      this.getPeriodos(this.anio);
+     this.getInfoSms();
     },
     components:{
       modal
@@ -225,6 +238,19 @@
 
         })
       },
+      getInfoSms:function(){
+        var url = 'https://api.textveloper.com/aplicacion/detalle/';
+        var cuenta_token='5efdf4ab22b5eae853c6304cde484f6b2cac3fa5&';
+        var aplicacion_token='c7c974fb3bffba1197ca6abe614b133db31c9c6a';
+
+        this.$http.post(url, {cuenta_token: cuenta_token, aplicacion_token: aplicacion_token}).then(response => {
+              var data = response.body.aplicacion;
+              this.cuentaSms.saldo = data.saldo;
+              this.cuentaSms.mensajes = parseFloat(data.saldo) / parseFloat(10.50); 
+        }, response => {
+
+        });
+      },
       toggleCobro: function(){
 
         if(!this.viewForm){
@@ -235,14 +261,14 @@
       },
       confirmacion: function(){
 
+         var nomperiodo = $("#periodo :selected").text();
+         var nomtipocobro = $("#tipocobro :selected").text();
+
         if(this.cobro.casas.length == 0){
 
               return this.$swal('Debes seleccionar al menos una casa!');
 
           }
-
-        var nomperiodo = $("#periodo :selected").text();
-        var nomtipocobro = $("#tipocobro :selected").text();
 
         this.mensaje_cobro = 'Deseas generar el cobro por: ' + nomtipocobro +', para '+ nomperiodo +', del año '+ this.anio + ', por el monto de ';
 
@@ -250,6 +276,8 @@
 
       },
       generarCobro: function(){
+        var nomperiodo = $("#periodo :selected").text();
+        var nomtipocobro = $("#tipocobro :selected").text();
 
 
           if(this.cobro.casas.length == 0){
@@ -259,11 +287,13 @@
           }
 
             this.loading = true;
-            this.$http.post('/api/ingresos/generarCobro', {cobro: this.cobro}).then(response => {
+            this.saving = true;
+            this.$http.post('/api/ingresos/generarCobro', {cobro: this.cobro, sms: this.sms, periodo: nomperiodo, nomtipocobro: nomtipocobro, anio: this.anio }).then(response => {
 
                   if(response.body.save && response.body.casas.length == 0){
 
                       this.showModal = false;
+                       this.saving = false
                        this.generando = true;
                       this.$swal(response.body.msj);
 
@@ -273,8 +303,9 @@
 
                   }else if(response.body.save && response.body.casas.length > 0){
 
-                      this.showModal = false;
-                      this.generando = true;
+                     this.showModal = false;
+                       this.saving = false
+                       this.generando = true;
                       this.$swal({title:'Error', text: 'Los cobros se generaron, excepto para las casas '+ response.body.casas + ', Ya tenian esta cuota registrada', type: 'success'});
 
 
@@ -283,17 +314,21 @@
                   }else if(!response.body.save && response.body.casas.length > 0){
 
                       this.showModal = false;
-                      this.generando = true;
+                       this.saving = false
+                       this.generando = true;
                       this.$swal({title:'Error', text: 'Ya este cobro se realizo anteriormente para todas las casas', type: 'error'});
 
                       return this.getCasas();
                   }else{
 
                       this.showModal = false;
+                       this.saving = false
+                       this.generando = true;
                       this.$swal({title:'Error', text: 'Ocurrio un error al generar los cobros', type: 'error'});
                   }
             
             this.loading = false;
+            this.saving = false
             this.generando = false; 
 
             });

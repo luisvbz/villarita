@@ -108,11 +108,18 @@ class MantenimientoController extends Controller
 
     }
 
-    public function getCuentas()
+    public function getCuentasE()
     {
-    	$cuentas = Cuenta::with('banco')->get();
+    	$cuentas = Cuenta::with('banco')->where('id','!=','1')->get();
 
     	return $cuentas->toJson();
+    }
+
+    public function getCuentas()
+    {
+        $cuentas = Cuenta::with('banco')->get();
+
+        return $cuentas->toJson();
     }
 
     public function saveCuenta(Request $request)

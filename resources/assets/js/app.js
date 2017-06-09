@@ -36,7 +36,7 @@ import App from './components/App.vue';
 import Login from './components/Login.vue';
 
 Vue.http.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('jwt-token');
-Vue.http.options.root = 'http://localhost:8000';
+Vue.http.options.root = 'http://condominiovillarita.com.ve';
 Vue.http.headers.common['X-CSRF-TOKEN'] = $("#token").attr("value");
 
 const app = new Vue({

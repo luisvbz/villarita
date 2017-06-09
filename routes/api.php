@@ -29,7 +29,7 @@ Route::post('/register', 'LoginController@register');
         Route::get('/casas', 'CensoController@getAll');
         Route::post('/casas', 'CensoController@save');
         Route::get('/casas/{id}', 'CensoController@getCasa');
-        Route::put('/casas/{id}', 'CensoController@updateCasa');
+        Route::post('/casas/edit/{id}', 'CensoController@updateCasa');
 
         Route::get('/propietarios/pagos', 'CensoController@getPagos');
         Route::post('/propietarios/pagos', 'CensoController@registrarPago');
@@ -52,6 +52,7 @@ Route::post('/register', 'LoginController@register');
 
         /* Cuentas */
         Route::get('/cuentas/', 'MantenimientoController@getCuentas');
+        Route::get('/cuentas2/', 'MantenimientoController@getCuentasE');
         Route::post('/cuentas/', 'MantenimientoController@saveCuenta');
         Route::delete('/cuentas/{id}', 'MantenimientoController@deleteCuenta');
         Route::get('/bancos/', 'MantenimientoController@getBancos');

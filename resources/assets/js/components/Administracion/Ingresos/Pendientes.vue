@@ -12,7 +12,7 @@
             		<thead>
             			<tr>
 	            			<th>#</th>
-	            			<th>Usuario</th>
+	            			<th>Propietario</th>
 	            			<th>Casa</th>
 	            			<th>Fecha</th>
 	            			<th>Tipo</th>
@@ -25,14 +25,14 @@
             		<tbody>
             			<tr v-for="(pago, index) in pagos">
             				<td>{{ index + 1 }}</td>
-            				<td>{{ pago.user_id }}</td>
-            				<td>{{ pago.casa_id }}</td>
+            				<td>{{ pago.user.name }}</td>
+            				<td>{{ pago.casa.numero }}</td>
             				<td>{{ pago.fecha_pago | formatDate('DD/MM/YYYY') }}</td>
             				<td>{{ pago.formapago.descripcion }}</td>
             				<td>0{{ pago.cuenta.numero }}</td>
             				<td>{{ pago.referencia }}</td>
             				<td>{{ pago.monto | currency('') }}</td>
-            				<td v-if="!pago.confirmado">
+            				<td v-if="pago.confirmado == 0">
             					<button class="btn btn-xs btn-success" @click="preGuardado(pago)" rel="toltip" title="confirmar"><i class="fa fa-check"></button>
             					<button class="btn btn-xs btn-danger" rel="toltip" title="rechazar"><i class="fa fa-times"></button>
             				</td>
@@ -92,7 +92,7 @@ import modal from '../../modal.vue';
 			},
 			preGuardado: function(pago){
 
-				this.mensaje = 'Confirma que el pago registrado por '+ pago.user_id + ' de la casa # '+ pago.casa_id + ' fue abonado en la cuenta ' + pago.cuenta.numero +' a traves de un(a) ' + pago.formapago.descripcion + ' por el monto de: ' + pago.monto;
+				this.mensaje = 'Confirma que el pago registrado por '+ pago.user.name + ' de la casa # '+ pago.casa.numero + ' fue abonado en la cuenta 0' + pago.cuenta.numero +' a traves de un(a) ' + pago.formapago.descripcion + ' por el monto de: ' + pago.monto;
 				this.confirmacion = true;
 				this.pago = pago.id
 			},

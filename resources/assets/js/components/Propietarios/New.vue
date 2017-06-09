@@ -12,6 +12,7 @@
 
                   <div class="col-sm-1">
                     <select class="form-control" id="calle" v-model="propietario.calle" required>
+                      <option disabled value="">--</option>
                     	<option value="1">1</option>
                     	<option value="2">2</option>
                     	<option value="3">3</option>
@@ -23,7 +24,7 @@
                   </div>
                   <label for="casa" class="col-sm-2 control-label">Casa #</label>
                   <div class="col-sm-2">
-                  	<input type="number" class="form-control" maxlength="3" v-model="propietario.casa" required>
+                  	<input type="number" class="form-control" maxlength="3" v-model="propietario.casa" required placeholder="# Casa">
                   </div>
                   <div class="col-sm-4">
                     <div class="checkbox">

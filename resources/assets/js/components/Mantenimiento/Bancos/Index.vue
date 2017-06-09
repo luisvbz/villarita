@@ -99,7 +99,7 @@ import modal from '../../modal.vue';
 		methods: {
 			getCuentas: function(){
 
-				this.$http.get('/api/cuentas').then(response => {
+				this.$http.get('/api/cuentas2').then(response => {
 
 					for (var i = 0; i < response.body.length; i++) {
 						this.cuentas.push(response.body[i])	

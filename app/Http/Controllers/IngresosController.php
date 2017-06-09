@@ -9,7 +9,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use DB;
 use App\Pago;
 use App\Cuenta;
-
+use App\Sms;
 class IngresosController extends Controller
 {
     public function getIngresos()
@@ -20,11 +20,11 @@ class IngresosController extends Controller
     						->orderBy('casa_id', 'ASC')
     						->get();*/
 
-    	$ingresos = DB::select("SELECT a.id, a.numero, b.id as p_id, b.apellidos, b.nombres, sum(c.monto) as monto 
+    	$ingresos = DB::select("SELECT a.id, a.numero, b.id as p_id, b.apellidos, b.nombres, b.telefono1 as tlf, sum(c.monto) as monto 
 								FROM casas a
 								INNER JOIN propietarios b ON b.id = a.propietario_id
 								LEFT JOIN ingresos c ON c.casa_id = a.id
-								GROUP BY a.id, a.numero, b.id, b.apellidos, b.nombres
+								GROUP BY a.id, a.numero, b.id, b.apellidos, b.nombres, b.telefono1
 								ORDER BY a.numero ASC");
     	$data = array();
 
@@ -36,7 +36,8 @@ class IngresosController extends Controller
     		array_push($data, array('casa_id' => $i->id,
     								'numero' => $i->numero,
     						   'propietario_id' => $i->p_id,
-    						   'propietario' => $i->apellidos.', '.$i->nombres,
+                               'propietario' => $i->apellidos.', '.$i->nombres,
+    						   'telefono' => $i->tlf,
     						   'saldo' => number_format($saldo, 2,',', '.')));
     	}
 
@@ -47,8 +48,12 @@ class IngresosController extends Controller
     public function generarCobro(Request $request)
     {
     	$cobro = $request->input('cobro');
+        $sms = $request->input('sms');
         $casas = array();
 
+        //$mensaje = 'Hola Luis, se realizó el cobro de: '.strtoupper($request->input('nomtipocobro')).' de '.strtoupper($request->input('periodo')).' del '.$request->input('anio').', por el monto de '.$cobro['monto'].'. Verifique su estado de cuenta en condominiovillarita.com.ve';
+
+       // return strlen($mensaje);
         $user = JWTAuth::parseToken()->authenticate();
 
         $totalCobros = Ingreso::all()->count();
@@ -78,7 +83,27 @@ class IngresosController extends Controller
                 $new->codperi = $cobro['codperi'];
                 $new->monto = -$cobro['monto'];
                 $new->user_id = $user->id;
-                $new->save();    
+                $save = $new->save();
+
+                if($save == true && $sms == true){
+
+                    $casa = Casa::find($value);
+
+                    $apellidos = explode(" ", $casa->propietario->apellidos);
+                    $nombres = explode(" ", $casa->propietario->nombres);
+
+                    $mensaje = 'Hola '.$nombres[0].', se realizó el cobro de: '.strtoupper($request->input('nomtipocobro')).' de '.strtoupper($request->input('periodo')).' del '.$request->input('anio').', por el monto de '.$cobro['monto'].'. Verifique su estado de cuenta.';
+
+                    $newSms = new Sms();
+
+                    $parameters = array();
+                    $parameters['cuenta_token']     = '5efdf4ab22b5eae853c6304cde484f6b2cac3fa5';
+                    $parameters['aplicacion_token'] = 'c7c974fb3bffba1197ca6abe614b133db31c9c6a';
+                    $parameters['telefono']         = $casa->propietario->telefono1;
+                    $parameters['mensaje']          = $mensaje;
+                
+                    $newSms->enviar($parameters, true);
+                }  
             }
     		
     	}
@@ -117,7 +142,7 @@ class IngresosController extends Controller
     public function getPagos(){
 
 
-        $pagos = Pago::with('cuenta','formapago')->orderBy('created_at', 'DESC')->paginate(12);
+        $pagos = Pago::with('cuenta','formapago','user','casa')->orderBy('created_at', 'DESC')->paginate(12);
 
         $porConfirmar = Pago::where('confirmado',0)->count(); 
 

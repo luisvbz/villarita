@@ -34,7 +34,7 @@
             				<td>0{{ pago.cuenta.numero }}</td>
             				<td>{{ pago.referencia }}</td>
             				<td>{{ pago.monto | currency('') }}</td>
-            				<td v-if="!pago.confirmado" style="color: #f39c12;"><i class="fa fa-warning"></i> Pendiente</td>
+            				<td v-if="pago.confirmado == 0" style="color: #f39c12;"><i class="fa fa-warning"></i> Pendiente</td>
             				<td v-else style="color: #00a65a"><i class="fa fa-check"></i> Aprobado</td>
             			</tr>
             		</tbody>
@@ -147,7 +147,7 @@ import auth from '../../services/auth';
 			},
 			 getCuentas: function(){
 
-		        this.$http.get('/api/cuentas').then(response => {
+		        this.$http.get('/api/cuentas2').then(response => {
 
 		          for (var i = 0; i < response.body.length; i++) {
 		            this.bancos.push(response.body[i]) 

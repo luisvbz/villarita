@@ -15,6 +15,7 @@ use PDF;
 use App\Cuenta;
 use App\Cne;
 use App\Pago;
+use App\User;
 
 class CensoController extends Controller
 {
@@ -53,7 +54,7 @@ class CensoController extends Controller
 
         $user = JWTAuth::parseToken()->authenticate();
 
-        $pagos = Pago::with('cuenta','formapago')->where('user_id', $user->id)->orderBy('created_at', 'DESC')->paginate(12);
+        $pagos = Pago::with('cuenta','formapago','user')->where('user_id', $user->id)->orderBy('created_at', 'DESC')->paginate(12);
 
         return $pagos->toJson();
     }
@@ -81,7 +82,7 @@ class CensoController extends Controller
 
                 $pago->save();
 
-                $miPago = Pago::find($pago->id)->with('cuenta');
+                $miPago = Pago::find($pago->id)->with('cuenta','user');
                 return response()->json(array('save' => true, 'pago' => $pago)); 
 
             } catch (Exception $e) {
@@ -159,8 +160,12 @@ class CensoController extends Controller
                                             $q->where('numero', $id);
                                         })->get();
 
+        $saldo = \DB::select("SELECT sum(c.monto) as monto 
+                                FROM casas a
+                                LEFT JOIN ingresos c ON c.casa_id = a.id
+                                WHERE a.numero = $id");
 
-    	return $propietario->toJson();
+    	return response()->json(array('propietario' => $propietario, 'saldo' => $saldo[0]->monto));
     }
 
     public function save(Request $request)
@@ -301,6 +306,19 @@ class CensoController extends Controller
     			$vehiculo->save();
     		}
     	}
+
+        $ape = explode(" ", $p->apellidos);
+        $nom = explode(" ", $p->nombres);
+
+        $user = new User;
+        $user->cedula = $p->cedula;
+        $user->username = $p->cedula;
+        $user->name = $nom[0].' '.$ape[0];
+        $user->email = $p->email;
+        $user->password = \Hash::make($p->cedula);
+        $user->role_id = 3;
+        $user->casa = $casa->numero;
+        $user->save();
 
     	return response()->json(['save' => true, 'msj' => 'El registro fue hecho exitosamente']);
 

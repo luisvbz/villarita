@@ -4,15 +4,28 @@
         <div class="load-wrapper">
           <div class="load-container">
             <div class="load-body">
-              <slot name="body">
-                default body
-              </slot>
+              <img src="/img/logo_small.png" style="width: 100%;">
+                <center>
+                <pulse-loader color="#94c120"></pulse-loader>
+                  <slot name="mensaje">
+                  <h4>Entrando, por favor espere...</h4>
+                  </slot>
+                </center> 
             </div>
           </div>
         </div>
       </div>
     </transition>
   </template>
+  <script>
+  import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
+  export default {
+    name: 'loading',
+    components:{
+      PulseLoader
+    }
+  }
+  </script>
   <style>
   .load-mask {
   position: fixed;
