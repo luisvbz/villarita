@@ -22,13 +22,12 @@
               <router-link to="/mantenimiento/tipoegresos"  class="btn btn-app">
                 <i class="fa fa-dollar"><i class="fa fa-long-arrow-up"></i></i> Tipos de Egresos
                </router-link>
+               <router-link to="/mantenimiento/vigilantes" class="btn btn-app">
+                <i class="fa fa-user"></i> Vigilantes
+              </router-link>
               <router-link to="/mantenimiento/usuarios" class="btn btn-app">
-                <span class="badge bg-purple">2</span>
                 <i class="fa fa-users"></i> Users
               </router-link>
-              <a @click="getPdf" class="btn btn-app">
-                <i class="fa fa-file"></i></i> Reportes
-              </a>
             </div>
             <!-- /.box-body -->
           </div>

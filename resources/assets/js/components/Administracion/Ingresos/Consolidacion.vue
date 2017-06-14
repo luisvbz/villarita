@@ -27,7 +27,7 @@
             				<td>0{{ cuenta.numero }}</td>
             				<td>{{ cuenta.disponible | currency('') }}</td>
             				<td><router-link :to="'/administracion/conban/detalles/'+cuenta.id" rel="tooltip" title="Ver detalles" class="btn btn-sm btn-success"><i class="fa fa-eye"></i></router-link>
-            				<button rel="tooltip" v-on:click="deleteCuenta(cuenta, index)" title="Eliminar cuenta" class="btn btn-sm btn-danger"><i class="fa fa-trash-o"></i></button></td>
+            				</td>
             			</tr>
             		</tbody>
             	</table>

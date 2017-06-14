@@ -36,8 +36,8 @@
         <div class="col-xs-12">
           <h2 class="page-header">
             <img src="/img/logo_small.png" width="190" height="74">
-           <span class="pull-right">Estado de cuenta, Casa <strong># {{ casa.numero }}</strong>
-           </span> 
+           <span class="pull-right">Estado de cuenta <strong v-if="anio != 0">{{ anio }}</strong>, Casa <strong># {{ casa.numero }}</strong>
+           </span>
           </h2>
         </div>
         <!-- /.col -->
@@ -46,12 +46,9 @@
       <!-- /.row -->
 
       <!-- Table row -->
-  <div class="row" v-if="cargando">
-      <center>
-        <i class="fa fa-spinner fa-spin" style="color: #00a65a; font-size:40px;"></i>
-        <br>Cargando estado de cuenta ...
-      </center>
-  </div>
+			<loading v-if="cargando">
+				<h4 slot="mensaje">Cargando estado de cuenta ...</h4>
+			</loading>
     <div class="row" v-else>
         <div class="col-xs-10 col-xs-offset-1">
         <table class="table table-striped" style="width: 100%;">
@@ -91,10 +88,10 @@
                <td  v-if="c.tipo == 'D'">{{ c.tipo_ingreso.descripcion }} / {{ c.periodo.descripcion }} {{ c.anio }}</td>
                <td  v-if="c.tipo == 'C'">
                 <template v-if="c.forma_pago_id == 1">
-                  Transferencia: {{ c.referencia}}/ 
+                  Transferencia: {{ c.referencia}}/
                 </template>
                 <template v-else-if="c.forma_pago_id == 2">
-                  Deposito: {{ c.referencia}}/ 
+                  Deposito: {{ c.referencia}}/
                 </template>
                 <template v-else>
                   Pago recibido en efectivo
@@ -123,7 +120,7 @@
 	</div>
 
   </div>
-      
+
     </section>
     <!-- Modal para aplicar pagos -->
  <transition name="modal" v-if="showModal">
@@ -141,7 +138,7 @@
             <div class="modal-body">
               <form v-on:submit.prevent="prePagar">
          <div class="form-group">
-                  <label>Seleccione la forma de pago</label> 
+                  <label>Seleccione la forma de pago</label>
                   <select class="form-control" v-model="nuevoPago.tipoPago">
                     <option value="1">Transferencia</option>
                     <option value="2">Deposito</option>
@@ -151,7 +148,7 @@
             <div class="form-group" v-if="nuevoPago.tipoPago != 3">
                 <select class="form-control" v-model="nuevoPago.cuenta">
                 <option disabled value="">-- Seleccion la cuenta destino ---</option>
-                  <option v-for="cuenta in bancos" :value="cuenta.id">{{cuenta.banco.descripcion}} - 0{{ cuenta.numero }}</option>  
+                  <option v-for="cuenta in bancos" :value="cuenta.id">{{cuenta.banco.descripcion}} - 0{{ cuenta.numero }}</option>
                 </select>
             </div>
             <div class="form-group" v-if="nuevoPago.tipoPago != 3">
@@ -202,6 +199,7 @@
  import Ruta from '../Ruta.vue';
  import moment from 'moment';
  import modal from './modal.vue';
+ import loading from '../loading.vue';
   export default {
     data () {
       return {
@@ -230,9 +228,9 @@
         registrando: false,
         confirmacion: false
       }
-    }, 
+    },
     mounted(){
-      
+
       if(!auth.user.authenticated)
       {
         return router.push({path: '/'})
@@ -249,9 +247,6 @@
       //this.getEstCuenta();
       this.getCuentas();
 
-    },
-    components:{
-      modal
     },
     computed: {
       totalDeuda: function(){
@@ -270,7 +265,7 @@
         for (var i = 0; i < this.nuevoPago.cuotas.length; i++) {
 
           total = parseFloat(total) + parseFloat(cuotas[i].monto);
-              
+
         }
 
         return total;
@@ -310,7 +305,7 @@
               for (var i = 0; i < data.vehiculos.length; i++) {
                 this.vehiculos.push(data.vehiculos[i]);
               };
-            
+
               //data propietario
               this.propietario.cedula = data.cedula;
               this.propietario.apellidos = data.apellidos;
@@ -336,7 +331,7 @@
       	 this.$http.get('/api/estcuenta/'+this.miCasa+'/'+this.anio).then(response => {
 
       	 		for (var i = 0; i < response.body.length; i++) {
-      	 			
+
       	 			this.cuentas.push(response.body[i]);
 
               this.totalMonto = parseFloat(this.totalMonto) + parseFloat(this.cuentas[i].monto);
@@ -346,7 +341,7 @@
               }
 
               if(this.cuentas[i].tipo == 'C'){
-                 this.totalCreditos = parseFloat(this.totalCreditos) + parseFloat(this.cuentas[i].monto); 
+                 this.totalCreditos = parseFloat(this.totalCreditos) + parseFloat(this.cuentas[i].monto);
               }
 
       	 		};
@@ -362,7 +357,7 @@
         this.$http.get('/api/cuentas2').then(response => {
 
           for (var i = 0; i < response.body.length; i++) {
-            this.bancos.push(response.body[i]) 
+            this.bancos.push(response.body[i])
           }
         }, response => {
 
@@ -372,8 +367,8 @@
 
           this.$http.get('/api/aniofiscal').then(response => {
             for (var i = 0; i < response.body.length; i++) {
-                this.anios.push(response.body[i]) 
-              } 
+                this.anios.push(response.body[i])
+              }
 
               this.anio = this.anios[0].aniofiscal;
           })
@@ -432,7 +427,7 @@
         }
     },
     components: {
-      Ruta
+      Ruta, loading
     }
   }
 </script>

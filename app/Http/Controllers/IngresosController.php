@@ -58,6 +58,8 @@ class IngresosController extends Controller
 
         $totalCobros = Ingreso::all()->count();
 
+        $arrayTelefonos = array();
+
     	foreach ($cobro['casas'] as $key => $value) {
 
             $verificar = Ingreso::where('codperi', $cobro['codperi'])
@@ -85,28 +87,36 @@ class IngresosController extends Controller
                 $new->user_id = $user->id;
                 $save = $new->save();
 
-                if($save == true && $sms == true){
+
+                if($save == true){
 
                     $casa = Casa::find($value);
 
                     $apellidos = explode(" ", $casa->propietario->apellidos);
                     $nombres = explode(" ", $casa->propietario->nombres);
 
-                    $mensaje = 'Hola '.$nombres[0].', se realizó el cobro de: '.strtoupper($request->input('nomtipocobro')).' de '.strtoupper($request->input('periodo')).' del '.$request->input('anio').', por el monto de '.$cobro['monto'].'. Verifique su estado de cuenta.';
+                    $mensaje = 'Hola '.$nombres[0].', se realizó el cobro de: '.strtoupper($request->input('nomtipocobro')).' de '.strtoupper($request->input('periodo')).' del '.$request->input('anio').', por '.$cobro['monto'].'. Verifique su estado de cuenta.';
 
-                    $newSms = new Sms();
-
-                    $parameters = array();
-                    $parameters['cuenta_token']     = '5efdf4ab22b5eae853c6304cde484f6b2cac3fa5';
-                    $parameters['aplicacion_token'] = 'c7c974fb3bffba1197ca6abe614b133db31c9c6a';
-                    $parameters['telefono']         = $casa->propietario->telefono1;
-                    $parameters['mensaje']          = $mensaje;
-                
-                    $newSms->enviar($parameters, true);
+                    array_push($arrayTelefonos, array('telefono' => $casa->propietario->telefono1,
+                                                      'mensaje' => $mensaje));
                 }  
             }
     		
     	}
+
+        if($sms == true){
+            foreach ($arrayTelefonos as $a) {
+               $newSms = new Sms();
+                $parameters = array();
+                $parameters['cuenta_token']     = '5efdf4ab22b5eae853c6304cde484f6b2cac3fa5';
+                $parameters['aplicacion_token'] = 'c7c974fb3bffba1197ca6abe614b133db31c9c6a';
+                $parameters['telefono']         = $a['telefono'];
+                $parameters['mensaje']          = $a['mensaje'];
+            
+                $newSms->enviar($parameters, true);
+            }
+            
+        }
 
         $diferencia = Ingreso::all()->count();
 
@@ -119,6 +129,16 @@ class IngresosController extends Controller
     	return response()->json(array('save' => $save, 
                                        'msj' => 'Las cuotas se generaron correctamente',
                                        'casas' => $casas));
+
+    }
+
+    public function detalleSms(){
+            $detalles = new Sms();
+            $parameters = array();
+            $parameters['cuenta_token']     = '5efdf4ab22b5eae853c6304cde484f6b2cac3fa5';
+            $parameters['aplicacion_token'] = 'c7c974fb3bffba1197ca6abe614b133db31c9c6a';
+            $detalles->detalles($parameters, true);
+
 
     }
 

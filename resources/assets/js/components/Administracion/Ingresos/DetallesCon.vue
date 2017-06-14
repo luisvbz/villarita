@@ -1,5 +1,5 @@
 <template>
 	<div>
-		asdasd
+		Detalles de las cuentas
 	</div>
 </template>

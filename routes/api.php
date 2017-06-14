@@ -17,7 +17,7 @@ use Illuminate\Http\Request;
     return $request->user();
 });*/
 
-
+Route::get('/detalleSms', 'IngresosController@detalleSms');
 
 Route::post('/login', 'LoginController@signin');
 Route::post('/register', 'LoginController@register');
@@ -81,6 +81,21 @@ Route::post('/register', 'LoginController@register');
                 Route::get('/pagosPendientes/{casa_id}', 'IngresosController@PagoPendientes');
                 Route::get('/pagos', 'IngresosController@getPagos');
                 Route::post('/pagos', 'IngresosController@procesarPago');
+                Route::get('/detalleSms', 'IngresosController@detalleSms');
+         });
+
+         Route::group(['prefix' => '/social'], function () {
+
+                Route::get('/', 'NoticiasController@getAll');
+                
+         });
+
+         Route::group(['prefix' => '/vigilantes'], function () {
+
+                Route::get('/', 'VigilantesController@getAll');
+                Route::post('/', 'VigilantesController@guardar');
+                Route::get('/status/{id}', 'VigilantesController@cambiarStatus');
+                
          });
 
          Route::group(['prefix' => 'reporte'], function () {
@@ -95,6 +110,12 @@ Route::post('/register', 'LoginController@register');
         Route::post('/pdf', 'CensoController@pdf');
 
     });
+
+ Route::group(['prefix' => '/noticias'], function () {
+
+                Route::get('/', 'NoticiasController@getAllPaginate');
+                
+});
 
 
 

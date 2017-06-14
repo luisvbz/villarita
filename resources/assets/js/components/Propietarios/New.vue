@@ -56,7 +56,7 @@
                 <div class="form-group">
                 	<label for="fecnacp" class="col-sm-2 control-label">Fec. Nac.</label>
                 	<div class="col-sm-2">
-                    	<input class="form-control" id="fecnacp" placeholder="00/00/0000" type="text" v-model="propietario.fecnac" required>
+                      <the-mask :mask="['##/##/####', '##/##/####']" class="form-control" v-model="propietario.fecnac"/>
                   </div>
                   <label for="sexop" class="col-sm-2 control-label">Sexo</label>
 	                	<div class="col-sm-2">

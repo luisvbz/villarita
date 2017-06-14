@@ -37,7 +37,7 @@
 			  </tr>
 			  <tr>
 			    <td class="tg-yeb6">Cedula</td>
-			    <td class="tg-031e">{!! $propietario['cedula'] !!}</td>
+			    <td class="tg-031e">{!! number_format($propietario['cedula'], 0, ",", ".") !!}</td>
 			    <td class="tg-yeb6">Propietario</td>
 			    <td class="tg-031e" colspan="5">{!! $propietario['apellidos'].', '.$propietario['nombres'] !!}</td>
 			    <td class="tg-yeb6">Casa</td>
@@ -50,9 +50,14 @@
 			    <td class="tg-wr85">Nº</td>
 			    <td class="tg-wr85" style="width: 15%;">FECHA</td>
 			    <td class="tg-wr85" colspan="4">DETALLES DEL MOVIMIENTO</td>
-			    <td class="tg-wr85" colspan="4" style="width: 15%;">MONTO</td>
+			    <td class="tg-wr85" colspan="2" style="width: 15%;">DEBITOS</td>
+			    <td class="tg-wr85" colspan="2" style="width: 15%;">CREDITOS</td>
 			  </tr>
-			  <?php $i = 1;$totalMonto = 0;?>
+			  <?php $i = 1;
+			  $totalMonto = 0;
+			  $totalDebitos = 0;
+			  $totalCreditos = 0;
+			  ?>
 			  @foreach($estCuenta as $c)
 			  <tr>
 			    <td class="tg-031e" style="width: 3%; text-align: center;">{!! $i++ !!}</td>
@@ -68,14 +73,34 @@
 			  			<td class="tg-031e" colspan="4">Pago recibido en efectivo</td>
 			  		@endif  
 			    @endif
-			  @if($c->tipo == 'D')
-			  	<td colspan="4" class="tg-031e" style="text-align: right;"><span style="color: red;">{!! number_format($c->monto, 2, ",", ".")!!}</span></td>
-			  @else
-			  	<td colspan="4" class="tg-031e" style="text-align: right;">{!! number_format($c->monto, 2, ",", ".") !!}</td>
-			  @endif
+			  	<td colspan="2" class="tg-031e" style="text-align: right;"><span style="color: red;">
+			  		@if($c->tipo == 'D')
+			  			{!! number_format($c->monto, 2, ",", ".")!!}</span>
+			  		@endif
+			  	</td>
+			  	<td colspan="2" class="tg-031e" style="text-align: right;">
+			  		@if($c->tipo == 'C')
+			  			{!! number_format($c->monto, 2, ",", ".")!!}</span>
+			  		@endif
+			  	</td>
 			  </tr>
-			  <?php $totalMonto = $totalMonto + $c->monto; ?>
+			  <?php $totalMonto = $totalMonto + $c->monto; 
+			  	if($c->tipo == 'D'){
+			  		$totalDebitos = $totalDebitos + $c->monto;
+			  	}else{
+			  		$totalCreditos = $totalCreditos + $c->monto;
+			  	}
+			  ?>
 			  @endforeach
+		<tr>
+			<td class="tg-031e" style="text-align:right;" colspan="6"><b>Subtotal</b></td>	
+			<td class="tg-031e" colspan="2" style="text-align:right;">
+				{!! number_format($totalDebitos, 2, ",", ".") !!}
+			</td>
+			<td class="tg-031e" colspan="2" style="text-align:right;">
+				{!! number_format($totalCreditos, 2, ",", ".") !!}
+			</td>
+		</tr>
         <tr>
           <td class="tg-031e" style="text-align:right;" colspan="6"><b>Total</b></td>
           <td class="tg-031e" colspan="4" style="text-align:right;"><span><b>{!! number_format($totalMonto, 2, ",", ".") !!}</b></span></td>

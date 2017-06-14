@@ -1,8 +1,6 @@
 <?php
 
-namespace App;
-
-class Sms {
+class api {
 
     var $post_url  = '';
     var $display   = '';
@@ -18,23 +16,23 @@ class Sms {
      * @parameter4 = mensaje
      */
 
-    function enviar($parameters, $show_results = false) 
+    function EnviarSms($parameters, $show_results = false) 
     {
-    	if  (in_array  ('curl', get_loaded_extensions())) {
-    		$this->url       =  $this->domain.'/sms/enviar/';
-            	$this->display   =  $show_results;
-            	$this->post_data =  $parameters;
-            	$this->makeCurl();
-    	}
-    	else {
-    		echo "Error: Libreria Curl es Requerida";
-    	}
+	if  (in_array  ('curl', get_loaded_extensions())) {
+		$this->url       =  $this->domain.'/sms/enviar/';
+        	$this->display   =  $show_results;
+        	$this->post_data =  $parameters;
+        	$this->makeCurl();
+	}
+	else {
+		echo "Error: Libreria Curl es Requerida";
+	}
     }
 
-    public function detalles($parameters, $show_results = false) 
+    function detalles($parameters, $show_results = false) 
     {
         if  (in_array  ('curl', get_loaded_extensions())) {
-            $this->url =  $this->domain.'/aplicacion/detalle/';
+            $this->url       =  $this->domain.'/aplicacion/detalle/';
                 $this->display   =  $show_results;
                 $this->post_data =  $parameters;
                 $this->makeCurl();
@@ -61,9 +59,14 @@ class Sms {
 
         if ($this->display) 
         {
-            return $this->result;
+            echo $this->result;
         }
     }
 
 }
+
+
+
+
+
 ?>

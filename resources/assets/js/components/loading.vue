@@ -4,13 +4,13 @@
         <div class="load-wrapper">
           <div class="load-container">
             <div class="load-body">
-              <img src="/img/logo_small.png" style="width: 100%;">
+              <img src="/img/logo_xsmall.png" style="width: 100%;">
                 <center>
                 <pulse-loader color="#94c120"></pulse-loader>
                   <slot name="mensaje">
                   <h4>Entrando, por favor espere...</h4>
                   </slot>
-                </center> 
+                </center>
             </div>
           </div>
         </div>

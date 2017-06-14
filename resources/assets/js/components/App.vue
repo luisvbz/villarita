@@ -116,13 +116,24 @@
       <!-- /.search form -->
       <!-- sidebar menu: : style can be found in sidebar.less -->
       <ul class="sidebar-menu">
+
         <li class="header">MENU PRINCIPAL</li>
+
         <li :class="$route.path == '/' ? 'active': ''"><router-link to="/"><i class="fa fa-home"></i> <span>Inicio</span></router-link></li>
+
         <li v-if="rol_administrador || rol_informatica" :class="$route.path == '/propietarios' ? 'active': ''"><router-link to="/propietarios"><i class="fa fa-group"></i> <span>Propietarios</span></router-link></li>
+
         <li v-if="rol_propietario" :class="$route.path == '/estadodecuenta' ? 'active': ''"><router-link to="/estadodecuenta"><i class="fa fa-money"></i> <span>Mi estado de cuenta</span></router-link></li>
+
         <li v-if="rol_propietario" :class="$route.path == '/pagos' ? 'active': ''"><router-link to="/pagos"><i class="fa fa-dollar"></i> <span>Mis pagos</span></router-link></li>
+
         <li :class="$route.path == '/mantenimiento' ? 'active': ''" v-if="rol_administrador || rol_informatica"><router-link to="/mantenimiento"><i class="fa fa-dashboard"></i> <span>Mantenimiento</span></router-link></li>
         <li :class="$route.path == '/administracion' ? 'active': ''" v-if="rol_administrador || rol_informatica"><router-link to="/administracion"><i class="fa fa-tasks"></i> <span>Administracion</span></router-link></li>
+
+         <li v-if="rol_administrador || rol_informatica" :class="$route.path == '/social' ? 'active': ''"><router-link :to="{name: 'social'}"><i class="fa fa-rss"></i> <span>Social</span></router-link></li>
+
+        <li :class="$route.path == '/noticias' ? 'active': ''"><router-link to="/noticias"><i class="fa fa-twitter"></i> <span>Noticias</span></router-link></li>
+
         <li><a href="/reglamento.pdf"><i class="fa fa-file"></i> <span>Reglamento</span></a></li>
       </ul>
     </section>

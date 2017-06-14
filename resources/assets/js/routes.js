@@ -25,7 +25,8 @@ const router = new VueRouter({
                 {path: 'cuentas', name: 'cuentas', component: require('./components/Mantenimiento/Bancos/Index.vue')},
                 {path: 'tipoingresos', name: 'tipo.ingresos', component: require('./components/Mantenimiento/Ingresos/Index.vue')},
                 {path: 'tipoegresos', name: 'tipo.egresos', component: require('./components/Mantenimiento/Egresos/Index.vue')},
-                {path: 'usuarios', name: 'users', component: require('./components/Mantenimiento/Usuarios/Index.vue')}
+                {path: 'usuarios', name: 'users', component: require('./components/Mantenimiento/Usuarios/Index.vue')},
+                {path: 'vigilantes', name: 'vigilante', component: require('./components/Mantenimiento/Vigilantes/Index.vue')}
             ]},
         { path: '/administracion', name: 'admin', component: require('./components/Administracion/Index.vue'),
             children: [
@@ -38,6 +39,13 @@ const router = new VueRouter({
                     ]
                 },
                 //{path: 'ingresos', name: 'admin.ingresos', component: require('./components/Administracion/Ingresos/Index.vue')}
+            ]},
+        { path: '/noticias', name: 'news', component: require('./components/Noticias/Index.vue')},
+        { path: '/noticias/:slug', name: 'noticia.show', component: require('./components/Noticias/Show.vue')},
+        { path: '/social', name: 'social', component: require('./components/Social/index.vue'),
+            children: [
+                {path: 'noticias', name: 'noticias.admin', component: require('./components/Social/Noticias/Index.vue')},
+                {path: 'noticias/nueva', name: 'noticias.new', component: require('./components/Social/Noticias/Nueva.vue')},
             ]},
         { path: '*', redirect: '/'},
     ]

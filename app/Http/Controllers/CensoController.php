@@ -19,7 +19,7 @@ use App\User;
 
 class CensoController extends Controller
 {
-    
+
     public function getAll()
     {
 
@@ -45,8 +45,8 @@ class CensoController extends Controller
                             ->orderBy('created_at', 'ASC')
                             ->get();
         }
-        
-                            
+
+
         return $estCuenta->toJson();
     }
 
@@ -77,17 +77,17 @@ class CensoController extends Controller
             $pago->fecha_pago = $data['fecha'];
             $pago->confirmado = false;
             $pago->rechazado = false;
-            
+
             try {
 
                 $pago->save();
 
                 $miPago = Pago::find($pago->id)->with('cuenta','user');
-                return response()->json(array('save' => true, 'pago' => $pago)); 
+                return response()->json(array('save' => true, 'pago' => $pago));
 
             } catch (Exception $e) {
 
-                return response()->json(array('save' => false, 'pago' => ''));    
+                return response()->json(array('save' => false, 'pago' => ''));
             }
 
     }
@@ -160,7 +160,7 @@ class CensoController extends Controller
                                             $q->where('numero', $id);
                                         })->get();
 
-        $saldo = \DB::select("SELECT sum(c.monto) as monto 
+        $saldo = \DB::select("SELECT sum(c.monto) as monto
                                 FROM casas a
                                 LEFT JOIN ingresos c ON c.casa_id = a.id
                                 WHERE a.numero = $id");
@@ -207,10 +207,10 @@ class CensoController extends Controller
     		}
     	}
 
-    	//verificar placas de vehiculos 
+    	//verificar placas de vehiculos
 
     	foreach ($vehiculos as $v) {
-    		
+
     		$verificarVehiculo = Vehiculo::where('placa', $v['placa'])->get();
 
     		if(count($verificarVehiculo) > 0){
@@ -219,7 +219,7 @@ class CensoController extends Controller
 
     		}
     	}
-    	
+
 
 
     	//Guardar datos del propietario
@@ -241,7 +241,7 @@ class CensoController extends Controller
 
     	if(!$psave){
 
-    		return response()->json(['save' => false, 'msj' => 'Ocurrio un error al guardat el propietario']);
+    		return response()->json(['save' => false, 'msj' => 'Ocurrio un error al guardar el propietario']);
 
     	}
 
@@ -280,7 +280,7 @@ class CensoController extends Controller
     	}
 
     	if($request->input('hasHijos')){
-    		
+
     		foreach ($hijos as $h) {
     			$hijo = new Hijo;
     			$hijo->propietario_id = $p->id;
@@ -295,7 +295,7 @@ class CensoController extends Controller
     	}
 
     	if($request->input('hasVehiculos')){
-    		
+
     		foreach ($vehiculos as $v) {
     			$vehiculo = new Vehiculo;
     			$vehiculo->propietario_id = $p->id;
@@ -334,7 +334,7 @@ class CensoController extends Controller
 
 
         //return $casa['id'];
-        //Actualizar la casa 
+        //Actualizar la casa
         $c = Casa::find($casa['id']);
         $c->numero = $casa['numero'];
         $c->calle = $casa['calle'];
@@ -403,7 +403,7 @@ class CensoController extends Controller
                     $cyg->telefono2 = $conyuge['telefono2'];
                     $cyg->telefono3 = $conyuge['telefono3'];
                 }
-                
+
                 $cygsave = $cyg->save();
             }
         }else{
@@ -414,7 +414,7 @@ class CensoController extends Controller
                 $cyg = Conyuge::find($conyuge['id']);
                 $cyg->delete();
             }
-        
+
         }
 
         //actualizar informacion de los hijos
@@ -422,7 +422,7 @@ class CensoController extends Controller
         if($request->input('hasHijos')){
 
             foreach ($hijos as $h) {
-                
+
                 $verificarHijo = Hijo::where('cedula', $h['cedula'])->get();
 
                 if(count($verificarHijo) > 0){
@@ -456,7 +456,7 @@ class CensoController extends Controller
 
 
         foreach ($vehiculos as $v) {
-            
+
             $verificarVehiculo = Vehiculo::where('placa', $v['placa'])->get();
 
             if(count($verificarVehiculo) > 0){
